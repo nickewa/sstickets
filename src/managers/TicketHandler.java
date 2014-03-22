@@ -31,13 +31,13 @@ public class TicketHandler {
 				
 				Connection conn = DriverManager.getConnection("jdbc:mysql://"+ip, user, pass);
 				Statement stat = conn.createStatement();
-				stat.execute("CREATE TABLE IF NOT EXISTS requests (id INT, submitter TEXT, message TEXT, date TEXT, status TEXT, comment TEXT, location TEXT, staff TEXT)");
+				stat.execute("CREATE TABLE IF NOT EXISTS requests (id INT, submitter TEXT, message TEXT, date TEXT, status TEXT, comment TEXT, location TEXT, staff TEXT, server TEXT)");
 				return conn;
 			}
 			else {
 				Connection conn = DriverManager.getConnection("jdbc:sqlite:plugins/ModReq/DataBase.sql");
 				Statement stat = conn.createStatement();
-				stat.execute("CREATE TABLE IF NOT EXISTS requests (id int, submitter String, message String, date String, status String, comment String, location String, staff String)");
+				stat.execute("CREATE TABLE IF NOT EXISTS requests (id int, submitter String, message String, date String, status String, comment String, location String, staff String, server String)");
 				return conn;
 			}
 		} catch (Exception e) {
@@ -194,10 +194,10 @@ public class TicketHandler {
 		return 0;
     	
     }
-	public void addTicket(String submitter, String message, String date, Status status, String location) throws SQLException {//add a new ticket to the database
+	public void addTicket(String submitter, String serverr, String message, String date, Status status, String location) throws SQLException {//add a new ticket to the database
 		Connection conn = getConnection();
 		
-		PreparedStatement prep = conn.prepareStatement("INSERT INTO requests VALUES (?, ?, ?, ?, ?, ?,?,?)");
+		PreparedStatement prep = conn.prepareStatement("INSERT INTO requests VALUES (?, ?, ?, ?, ?, ?,?,?,?)");
 		prep.setInt(1, getTicketCount() +1);
 		prep.setString(2, submitter);
 		prep.setString(3, message);
@@ -206,6 +206,7 @@ public class TicketHandler {
 		prep.setString(6, "no comments yet");
 		prep.setString(7, location);
 		prep.setString(8, "no staff member yet");
+		prep.setString(9, serverr);
 		prep.addBatch();
 		
 		
@@ -228,7 +229,8 @@ public class TicketHandler {
 				String message = result.getString(3);
 				String comment = result.getString(6);
 				String staff = result.getString(8);
-				Ticket ticket = new Ticket(plugin,i, submitter, message, date, Status.getByString(status), comment,location,staff);
+				String server = result.getString(9);
+				Ticket ticket = new Ticket(plugin,i, submitter, server, message, date, Status.getByString(status), comment,location,staff);
 				result.close();
 				conn.close();
 				return ticket;

@@ -34,7 +34,7 @@ public class CheckCommand extends SubCommandExecutor{
     		}
 		
 	}
-	
+	//sdtsdfsdf
 	@command
 	public void Null (CommandSender sender, String[] args) {
 	    	String[] page1 = Utils.addInFront(args, "1");
@@ -94,7 +94,6 @@ public class CheckCommand extends SubCommandExecutor{
         	sender.sendMessage("This command can only be ran as a player");
             }
         }
-	
 	
 	
 	

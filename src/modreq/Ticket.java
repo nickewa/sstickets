@@ -14,6 +14,8 @@ public class Ticket
 {
 	private int id;
 	private String submitter;
+	private String serverr;
+	private String serv;
 	private String message;
 	private String date;
 	private Status status;
@@ -29,8 +31,9 @@ public class Ticket
 	private String request;
 	private TicketHandler tickets;
 	
-	public Ticket(modreq plugin,int idp, String submitt, String messa, String date, Status status, String comm, String loc, String sta)	{
+	public Ticket(modreq plugin,int idp, String submitt, String serv, String messa, String date, Status status, String comm, String loc, String sta)	{
 		submitter = submitt;
+		serverr = serv;
 		id = idp;
 		staff = sta;
 		this.date = date;
@@ -42,6 +45,7 @@ public class Ticket
 		tickets = plugin.getTicketHandler();
 		this.loc = plugin.Messages.getString("ticket.location", "Location");
 		this.sub = plugin.Messages.getString("ticket.submitter", "Submitter");
+		this.serv = plugin.Messages.getString("ticket.serverr", "Server");
 		this.dt = plugin.Messages.getString("ticket.date", "Date of Request");
 		this.sta = plugin.Messages.getString("ticket.status", "Status");
 		this.com = plugin.Messages.getString("ticket.comment", "Comment");
@@ -69,6 +73,10 @@ public class Ticket
 	 */
 	public String getSubmitter() {
 		return submitter;
+	}
+	
+	public String getServer() {
+		return serverr;
 	}
 	/**
 	 * This is used to get the date of the request
@@ -176,6 +184,7 @@ public class Ticket
 		if((( modreq )Bukkit.getPluginManager().getPlugin("ModReq")).getConfig().getString("use-nickname").equalsIgnoreCase("true")){	
 			if(playerIsOnline()) {
 				submitter = Bukkit.getPlayer(submitter).getDisplayName();
+				serverr = Bukkit.getServerName();
 			}
 		}
 		p.sendMessage(ChatColor.GOLD + "---Info-about-ticket-#"+id+"---");
@@ -186,6 +195,7 @@ public class Ticket
 		p.sendMessage(ChatColor.AQUA + this.dt+": " + ChatColor.GRAY + date);
 		p.sendMessage(ChatColor.AQUA + this.request+": " + ChatColor.GRAY + message);
 		p.sendMessage(ChatColor.AQUA + this.com+": " + ChatColor.GRAY + comment);
+		p.sendMessage(ChatColor.AQUA + this.serv+": " + ChatColor.GRAY + serverr);
 	}
 	
 	private boolean playerIsOnline() {

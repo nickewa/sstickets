@@ -17,6 +17,7 @@ import modreq.modreq;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -45,7 +46,7 @@ public class ModreqCommand implements CommandExecutor{
 					ticketsfromplayer = tickets.getTicketsFromPlayer(p, sender.getName(),Status.OPEN);
 					if(plugin.getConfig().getInt("maximum-open-tickets") > ticketsfromplayer) {
 						String message = Utils.join(args, " ", 0);
-						savereq(message, sender, ((Player) sender).getLocation());
+						savereq(message, sender, ((Player) sender).getLocation(), ((Player) sender).getServer());
 						sendMessageToAdmins(ChatColor.GREEN + sender.getName() + " " + ChatColor.AQUA + plugin.Messages.getString("submitted-mod", "submitted a moderator request"));
 						p.sendMessage(ChatColor.GREEN + plugin.Messages.getString("submitted-player", "You successfully submitted a help ticket, a moderator will help you soon"));
 						return true;
@@ -78,7 +79,7 @@ public class ModreqCommand implements CommandExecutor{
 	}
 	
     }
-    public void savereq(String message, CommandSender sender, Location loc) {//save a ticket to the database
+    public void savereq(String message, CommandSender sender, Location loc, Server serv) {//save a ticket to the database
 	String timezone = plugin.getConfig().getString("timezone");
 	DateFormat df = new SimpleDateFormat(plugin.getConfig().getString("timeformat","YY-MM-dd HH:mm:ss"));
 	TimeZone tz = TimeZone.getTimeZone(timezone);
@@ -88,12 +89,11 @@ public class ModreqCommand implements CommandExecutor{
 	cal.add(Calendar.MILLISECOND,-(cal.getTimeZone().getRawOffset()));  
 	cal.add(Calendar.MILLISECOND, tz.getRawOffset());       
 	Date dt = new Date(cal.getTimeInMillis());  
-	
 	String call = df.format(dt) + " @" + timezone;
 	String location =  loc.getWorld().getName()+" @ "+Math.round(loc.getX()) + " "+Math.round(loc.getY())+" "+Math.round(loc.getZ());
-	
+	String serverr = serv.getServerName();
 	try {
-		tickets.addTicket( sender.getName(), message, call, Status.OPEN, location);
+		tickets.addTicket( sender.getName(), serverr, message, call, Status.OPEN, location);
 	} catch (SQLException e) {}
 }
 
