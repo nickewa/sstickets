@@ -34,7 +34,7 @@ public class CheckCommand extends SubCommandExecutor{
     		}
 		
 	}
-	//sdtsdfsdf
+	//test
 	@command
 	public void Null (CommandSender sender, String[] args) {
 	    	String[] page1 = Utils.addInFront(args, "1");
