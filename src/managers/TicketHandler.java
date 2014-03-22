@@ -279,7 +279,7 @@ public class TicketHandler {
 			}	
 		return i;
 	}
-	public String getStaffTicketsAmount(String staffname) {
+	public String getStaffTicketsAmount(String staffname, Player p) {
 		int i = 0;
 			try {
 				Connection conn = getConnection();
@@ -296,6 +296,7 @@ public class TicketHandler {
 			
 			}
 			String test = Integer.toString(i);
+			p.sendMessage(ChatColor.GOLD+""+p.getName()+" has completed "+test+" requests");
 		return test;
 	
 

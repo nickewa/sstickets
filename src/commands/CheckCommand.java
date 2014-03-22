@@ -101,7 +101,8 @@ public class CheckCommand extends SubCommandExecutor{
 	public void staff(CommandSender sender, String[] args) {
 		tickets = plugin.getTicketHandler();
 	    if(sender instanceof Player) {
-		tickets.getStaffTicketsAmount(args[0]);
+		tickets.getStaffTicketsAmount(args[0], (Player) sender);
+		
 	    }else {
 		sender.sendMessage("This command can only be ran as a player");
 	    }
