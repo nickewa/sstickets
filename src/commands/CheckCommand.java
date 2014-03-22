@@ -94,6 +94,18 @@ public class CheckCommand extends SubCommandExecutor{
         	sender.sendMessage("This command can only be ran as a player");
             }
         }
+	@command(
+			minimumArgsLength = 1,
+			maximumArgsLength = 1,
+			usage = "/check staff <player>")
+	public void staff(CommandSender sender, String[] args) {
+		tickets = plugin.getTicketHandler();
+	    if(sender instanceof Player) {
+		tickets.getStaffTicketsAmount(args[0]);
+	    }else {
+		sender.sendMessage("This command can only be ran as a player");
+	    }
+	}
 	
 	
 	

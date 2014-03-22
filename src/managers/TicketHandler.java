@@ -104,7 +104,7 @@ public class TicketHandler {
 	public boolean hasClaimed(Player p) {
 		try {
 		Connection conn = getConnection();
-		Statement stat = conn.createStatement();
+		Statement stat = conn.createStatement();p.getName();
 		
 		
 		ResultSet result = stat.executeQuery("SELECT * FROM requests WHERE staff = '"+p.getName()+"' AND status = '"+Status.CLAIMED.getStatusString()+"' limit 5");
@@ -279,5 +279,26 @@ public class TicketHandler {
 			}	
 		return i;
 	}
+	public String getStaffTicketsAmount(String staffname) {
+		int i = 0;
+			try {
+				Connection conn = getConnection();
+				Statement stat = conn.createStatement();
+				ResultSet result = stat.executeQuery("SELECT id FROM requests WHERE staff = '"+staffname+"'");
+				while(result.next()) {
+					i++;
+				}
+				conn.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			
+			
+			}
+			String test = Integer.toString(i);
+		return test;
+	
 
+		
+	}
 }
