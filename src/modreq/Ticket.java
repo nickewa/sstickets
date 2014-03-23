@@ -30,8 +30,12 @@ public class Ticket
 	private String staf;
 	private String request;
 	private TicketHandler tickets;
+	private String world;
+	private int xx;
+	private int yy;
+	private int zz;
 	
-	public Ticket(modreq plugin,int idp, String submitt, String serv, String messa, String date, Status status, String comm, String loc, String sta)	{
+	public Ticket(modreq plugin,int idp, String submitt, String serv, String messa, String date, Status status, String comm, String loc, int x, int y, int z, String sta)	{
 		submitter = submitt;
 		serverr = serv;
 		id = idp;
@@ -41,6 +45,10 @@ public class Ticket
 		this.status = status;
 		location = loc;
 		comment = comm;
+		world = loc;
+		xx = x;
+		yy = y;
+		zz = z;
 		
 		tickets = plugin.getTicketHandler();
 		this.loc = plugin.Messages.getString("ticket.location", "Location");
@@ -82,8 +90,9 @@ public class Ticket
 	 * This is used to get the date of the request
 	 * @return
 	 */
-	public String getDate() {
-		return date;
+	public Long getDate() {
+		long epoch = System.currentTimeMillis()/1000;
+		return epoch;
 	}
 	/**
 	 * This is used to get the ticket id
@@ -112,17 +121,15 @@ public class Ticket
 	 * @return
 	 */
 	public Location getLocation() {
-		String world = location.split(" @ ")[0];
-		String rest = location.split(" @ ")[1];
-		String x = rest.split(" ")[0];
-		String y = rest.split(" ")[1];
-		String z = rest.split(" ")[2];
 		World w = Bukkit.getServer().getWorld(world);
-		double xx = Integer.parseInt(x);
-		double yy = Integer.parseInt(y);
-		double zz = Integer.parseInt(z);
 		Location loc = new Location(w,xx,yy,zz);
 		return loc;
+	}
+	
+	public World getWorld() {
+		String world = location.split(" @ ")[0];
+		World wor = Bukkit.getServer().getWorld(world);
+		return wor;
 	}
 	/**
 	 * This is used to send a the summary of a ticket to a player
@@ -190,7 +197,10 @@ public class Ticket
 		p.sendMessage(ChatColor.GOLD + "---Info-about-ticket-#"+id+"---");
 		p.sendMessage(ChatColor.AQUA + this.sta + ": " + ChatColor.GRAY + status);
 		p.sendMessage(ChatColor.AQUA + this.sub+": " + ChatColor.GRAY + submitter);
-		p.sendMessage(ChatColor.AQUA + this.loc+": " + ChatColor.GRAY + location);
+		p.sendMessage(ChatColor.AQUA + this.loc+": " + ChatColor.GRAY + location + " @ "+ xx  + ", " + yy +", "+ zz);
+		if (staff == null){
+			staff = "none assigned yet";
+		}
 		p.sendMessage(ChatColor.AQUA + this.staf+": " + ChatColor.GRAY + staff);
 		p.sendMessage(ChatColor.AQUA + this.dt+": " + ChatColor.GRAY + date);
 		p.sendMessage(ChatColor.AQUA + this.request+": " + ChatColor.GRAY + message);

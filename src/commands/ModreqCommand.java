@@ -80,20 +80,15 @@ public class ModreqCommand implements CommandExecutor{
 	
     }
     public void savereq(String message, CommandSender sender, Location loc, Server serv) {//save a ticket to the database
-	String timezone = plugin.getConfig().getString("timezone");
-	DateFormat df = new SimpleDateFormat(plugin.getConfig().getString("timeformat","YY-MM-dd HH:mm:ss"));
-	TimeZone tz = TimeZone.getTimeZone(timezone);
-
-
-	Calendar cal = Calendar.getInstance(Calendar.getInstance().getTimeZone(),Locale.ENGLISH);     
-	cal.add(Calendar.MILLISECOND,-(cal.getTimeZone().getRawOffset()));  
-	cal.add(Calendar.MILLISECOND, tz.getRawOffset());       
-	Date dt = new Date(cal.getTimeInMillis());  
-	String call = df.format(dt) + " @" + timezone;
-	String location =  loc.getWorld().getName()+" @ "+Math.round(loc.getX()) + " "+Math.round(loc.getY())+" "+Math.round(loc.getZ());
+    java.sql.Timestamp date = new java.sql.Timestamp(System.currentTimeMillis());
+    
+	String world1 = loc.getWorld().getName();
+	int x = loc.getBlockX();
+	int y = loc.getBlockY();
+	int z = loc.getBlockZ();
 	String serverr = serv.getServerName();
 	try {
-		tickets.addTicket( sender.getName(), serverr, message, call, Status.OPEN, location);
+		tickets.addTicket( sender.getName(), serverr, message, date, Status.OPEN, world1, x, y, z);
 	} catch (SQLException e) {}
 }
 
