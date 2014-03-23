@@ -63,7 +63,7 @@ public class TicketHandler {
 		Statement stat = conn.createStatement();
 		
 		ArrayList<Integer> tickets = new ArrayList<Integer>();
-		ResultSet result = stat.executeQuery("SELECT * FROM requests WHERE submitter = '"+target+"' AND status = '"+status.getStatusString()+"'");
+		ResultSet result = stat.executeQuery("SELECT * FROM requests WHERE submitter = '"+target+"' AND status = '"+status.getStatusString()+"' AND server = '"+Bukkit.getServerName()+"'");
 		while(result.next()) {
 			
 				tickets.add(result.getInt(1));
@@ -81,7 +81,7 @@ public class TicketHandler {
 		Statement stat = conn.createStatement();		
 		ArrayList<Integer> tickets = new ArrayList<Integer>();
 		ArrayList<Ticket> value = new ArrayList<Ticket>();
-		ResultSet result = stat.executeQuery("SELECT * FROM requests WHERE submitter = '"+target+"'");
+		ResultSet result = stat.executeQuery("SELECT * FROM requests WHERE submitter = '"+target+"' AND server = '"+Bukkit.getServerName()+"'");
 		
 		
 		while(result.next()) {
@@ -107,7 +107,7 @@ public class TicketHandler {
 		Statement stat = conn.createStatement();p.getName();
 		
 		
-		ResultSet result = stat.executeQuery("SELECT * FROM requests WHERE staff = '"+p.getName()+"' AND status = '"+Status.CLAIMED.getStatusString()+"' limit 5");
+		ResultSet result = stat.executeQuery("SELECT * FROM requests WHERE staff = '"+p.getName()+"' AND status = '"+Status.CLAIMED.getStatusString()+ "' AND server = '"+Bukkit.getServerName()+"' limit 5");
 		
 			if(result.next()) {
 				return true;
@@ -127,14 +127,14 @@ public class TicketHandler {
 			ResultSet result;
 			if(status.getStatusString().equals("open")) {
 				if(plugin.getConfig().getBoolean("show-claimed-tickets-in-open-list") == true) {
-				    	result = stat.executeQuery("SELECT * FROM requests WHERE status = 'open' or status = 'claimed' limit "+nmbr);
+				    	result = stat.executeQuery("SELECT * FROM requests WHERE status = 'open' AND server = '"+Bukkit.getServerName()+"' or status = 'claimed' limit "+nmbr);
 				}
 				else {
-					result = stat.executeQuery("SELECT * FROM requests WHERE status = 'open' limit "+nmbr);
+					result = stat.executeQuery("SELECT * FROM requests WHERE status = 'open' AND server = '"+Bukkit.getServerName()+"' limit "+nmbr);
 					}
 			}
 			else {
-			result = stat.executeQuery("SELECT * FROM requests WHERE status = '"+status.getStatusString()+"' limit "+nmbr);
+			result = stat.executeQuery("SELECT * FROM requests WHERE status = '"+status.getStatusString()+"' AND server = '"+Bukkit.getServerName()+"' limit "+nmbr);
 			}
 			while(result.next()) {
 				if(result.getRow() > nmbr-10) {
@@ -159,7 +159,7 @@ public class TicketHandler {
 		try {
 			Connection conn = getConnection();
 			Statement stat = conn.createStatement();
-			ResultSet rs = stat.executeQuery("SELECT id FROM requests ");
+			ResultSet rs = stat.executeQuery("SELECT id FROM requests");
 			int i = 0;
 			while(rs.next()) {
 			 i++;
@@ -179,7 +179,7 @@ public class TicketHandler {
     	try {
     		Connection conn = getConnection();
     		Statement stat = conn.createStatement();
-			ResultSet rs = stat.executeQuery("SELECT id FROM requests WHERE status = '"+statusString+"'");
+			ResultSet rs = stat.executeQuery("SELECT id FROM requests WHERE status = '"+statusString+"' AND server = '"+Bukkit.getServerName()+"'");
 			int i = 0;
 			while(rs.next()) {
 			 i++;
@@ -266,7 +266,7 @@ public class TicketHandler {
 			try {
 				Connection conn = getConnection();
 				Statement stat = conn.createStatement();
-				ResultSet result = stat.executeQuery("SELECT id FROM requests WHERE status = 'open'");
+				ResultSet result = stat.executeQuery("SELECT id FROM requests WHERE status = 'open' AND server = '"+Bukkit.getServerName()+"'");
 				while(result.next()) {
 					i++;
 				}
@@ -284,7 +284,7 @@ public class TicketHandler {
 			try {
 				Connection conn = getConnection();
 				Statement stat = conn.createStatement();
-				ResultSet result = stat.executeQuery("SELECT id FROM requests WHERE staff = '"+staffname+"'");
+				ResultSet result = stat.executeQuery("SELECT id FROM requests WHERE staff = '"+staffname+"' AND status = '"+Status.CLOSED.getStatusString()+ "'");
 				while(result.next()) {
 					i++;
 				}
@@ -296,7 +296,24 @@ public class TicketHandler {
 			
 			}
 			String test = Integer.toString(i);
-			p.sendMessage(ChatColor.GOLD+""+p.getName()+" has completed "+test+" requests");
+			p.sendMessage(ChatColor.GOLD+""+staffname+" has completed "+test+" requests on "+ChatColor.RED+"ALL"+ChatColor.GOLD+" servers");
+			int c = 0;
+			try {
+				Connection conn = getConnection();
+				Statement stat = conn.createStatement();
+				ResultSet result = stat.executeQuery("SELECT id FROM requests WHERE staff = '"+staffname+"' AND server = '"+Bukkit.getServerName()+"' AND status = '"+Status.CLOSED.getStatusString()+ "'");
+				while(result.next()) {
+					c++;
+				}
+				conn.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			
+			
+			}
+			String test1 = Integer.toString(c);
+			p.sendMessage(ChatColor.GOLD+""+staffname+" has completed "+test1+" requests on THIS server");
 		return test;
 	
 
