@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.logging.Logger;
@@ -119,7 +120,7 @@ public class TicketHandler {
 
 		return false;
 	}
-	public void sendPlayerPage(int page, Status status, Player p) {//send the -----List-of-STATUS-Requests----- 
+	public void sendPlayerPage(int page, Status status, Player p) throws ParseException {//send the -----List-of-STATUS-Requests----- 
 		try {
 		    	Connection conn = getConnection();
 			Statement stat = conn.createStatement();

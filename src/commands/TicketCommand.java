@@ -1,5 +1,7 @@
 package commands;
 
+import java.text.ParseException;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -17,7 +19,7 @@ public class TicketCommand extends SubCommandExecutor{
     }
     
     @command
-    public void Integer(CommandSender sender, String[] args) {
+    public void Integer(CommandSender sender, String[] args) throws ParseException {
 	tickets = plugin.getTicketHandler();
 	if(sender instanceof Player) {
 		if(sender.hasPermission("modreq.check")) {
@@ -36,7 +38,7 @@ public class TicketCommand extends SubCommandExecutor{
 				else {
 					tickets.getTicketById(id).sendMessageToPlayer((Player) sender);
 					return;
-				}
+			}
 			}
 		}
 	}

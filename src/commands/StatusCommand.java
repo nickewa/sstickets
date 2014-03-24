@@ -1,6 +1,7 @@
 package commands;
 
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 
 import org.bukkit.ChatColor;
@@ -21,7 +22,7 @@ public class StatusCommand extends SubCommandExecutor{
     }
     
     @command
-    public void Null(CommandSender sender, String[] args) {
+    public void Null(CommandSender sender, String[] args) throws ParseException {
 	tickets = plugin.getTicketHandler();
 	if(sender instanceof Player){
 		Player p = (Player) sender;

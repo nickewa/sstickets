@@ -1,6 +1,10 @@
 package modreq;
 
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import managers.TicketHandler;
 
@@ -135,8 +139,9 @@ public class Ticket
 	 * This is used to send a the summary of a ticket to a player
 	 * an example can be #id2 Mon 1 May Sgt_Tailor I need my house rolled back, ...
 	 * @return
+	 * @throws ParseException 
 	 */
-	public void sendSummarytoPlayer(Player p) {
+	public void sendSummarytoPlayer(Player p) throws ParseException {
 		ChatColor namecolor = ChatColor.RED;
 		Player[] list = Bukkit.getServer().getOnlinePlayers();
 		int l = list.length;
@@ -151,8 +156,8 @@ public class Ticket
 			n++;
 		}
 		String summessage = message;
-		if(summessage.length() > 15) {
-			summessage = summessage.substring(0,15);
+		if(summessage.length() > 30) {
+			summessage = summessage.substring(0, 30);
 		}
 		String summary;
 		if((( modreq )Bukkit.getPluginManager().getPlugin("ModReq")).getConfig().getString("use-nickname").equalsIgnoreCase("true")){	
@@ -161,33 +166,47 @@ public class Ticket
 			}
 		}
 		if(status == Status.CLAIMED) {
-			summary = ChatColor.GOLD + "#"+id+ ChatColor.AQUA+ " " + date+" "+namecolor+submitter+" "+ChatColor.GRAY+summessage+"..." + ChatColor.RED + " [Claimed]";
+
+			summary = ChatColor.GOLD + "#"+id+ ChatColor.AQUA+ " " + newdate()+" "+namecolor+submitter+" "+ChatColor.GRAY+summessage+"..." + ChatColor.RED + " [Claimed]";
 		}
-		else {
-			summary = ChatColor.GOLD + "#"+id+ ChatColor.AQUA+ " " + date+" "+namecolor+submitter+" "+ChatColor.GRAY+summessage+"...";
+		else {			
+			summary = ChatColor.GOLD + "#"+id+ ChatColor.AQUA+ " " + newdate()+" "+namecolor+submitter+" "+ChatColor.GRAY+summessage+"...";
 		}
 		
 		p.sendMessage(summary);
 	}
-	/**
+	
+	public String newdate() throws ParseException{
+		DateFormat dateFormat = new SimpleDateFormat("yyy-MM-dd HH:mm:ss");
+		Date dat = dateFormat.parse(date);
+		String newstring = new SimpleDateFormat("MMM-dd HH:mm").format(dat);
+		return newstring;
+	}
+	
+	/**ate
 	 * This is used to send the status of a ticket to a player
 	 * an example can be #3 [closed] I need my house rolled back, ...
 	 * @return
+	 * @throws ParseException 
 	 */
-	public void sendStatus(Player p) {
+
+
+	
+	public void sendStatus(Player p) throws ParseException {
 		String summessage = message;
-		if(summessage.length() > 15) {
-			summessage = summessage.substring(0,15);
+		if(summessage.length() > 30) {
+			summessage = summessage.substring(0,30);
 		}
-		String summary = ChatColor.GOLD + "#"+id+ ChatColor.AQUA+date+ChatColor.DARK_GREEN+" ["+status+"]"+" "+ChatColor.GRAY+summessage+"...";
+		String summary = ChatColor.GOLD + "#"+id+ ChatColor.AQUA+newdate()+ChatColor.DARK_GREEN+" ["+status+"]"+" "+ChatColor.GRAY+summessage+"...";
 		p.sendMessage(summary);
 	
 	}
 	/**
 	 * This is used to send all the ticket info to a player
 	 * @return
+	 * @throws ParseException 
 	 */
-	public void sendMessageToPlayer(Player p) {
+	public void sendMessageToPlayer(Player p) throws ParseException {
 		if((( modreq )Bukkit.getPluginManager().getPlugin("ModReq")).getConfig().getString("use-nickname").equalsIgnoreCase("true")){	
 			if(playerIsOnline()) {
 				submitter = Bukkit.getPlayer(submitter).getDisplayName();
@@ -202,7 +221,7 @@ public class Ticket
 			staff = "none assigned yet";
 		}
 		p.sendMessage(ChatColor.AQUA + this.staf+": " + ChatColor.GRAY + staff);
-		p.sendMessage(ChatColor.AQUA + this.dt+": " + ChatColor.GRAY + date);
+		p.sendMessage(ChatColor.AQUA + this.newdate()+": " + ChatColor.GRAY + date);
 		p.sendMessage(ChatColor.AQUA + this.request+": " + ChatColor.GRAY + message);
 		p.sendMessage(ChatColor.AQUA + this.com+": " + ChatColor.GRAY + comment);
 		p.sendMessage(ChatColor.AQUA + this.serv+": " + ChatColor.GRAY + serverr);

@@ -1,5 +1,7 @@
 package commands;
 
+import java.text.ParseException;
+
 import korik.SubCommandExecutor;
 import korik.Utils;
 import managers.TicketHandler;
@@ -24,7 +26,7 @@ public class CheckCommand extends SubCommandExecutor{
 			usage = "/check <page>",
 			description = "shows open tickets"
 			)
-	public void Integer (CommandSender sender, String[] args) {
+	public void Integer (CommandSender sender, String[] args) throws ParseException {
 		tickets = plugin.getTicketHandler();
     		int page = Integer.parseInt(args[0]);
     		if(sender instanceof Player) {
@@ -36,7 +38,7 @@ public class CheckCommand extends SubCommandExecutor{
 	}
 	//test33333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333
 	@command
-	public void Null (CommandSender sender, String[] args) {
+	public void Null (CommandSender sender, String[] args) throws ParseException {
 	    	String[] page1 = Utils.addInFront(args, "1");
 		Integer(sender, page1);
 		return;
@@ -66,7 +68,7 @@ public class CheckCommand extends SubCommandExecutor{
 			minimumArgsLength = 0,
 			maximumArgsLength = 1,
 			usage = "/check closed <page>")
-	public void closed(CommandSender sender, String[] args) {
+	public void closed(CommandSender sender, String[] args) throws ParseException {
 	    tickets = plugin.getTicketHandler();
 	    int page = 1;
 	    if(args.length == 1) {
@@ -82,7 +84,7 @@ public class CheckCommand extends SubCommandExecutor{
 		minimumArgsLength = 0,
 		maximumArgsLength = 1,
 		usage = "/check claimed <page>")
-        public void claimed(CommandSender sender, String[] args) {
+        public void claimed(CommandSender sender, String[] args) throws ParseException {
             tickets = plugin.getTicketHandler();
             int page = 1;
             if(args.length == 1) {
