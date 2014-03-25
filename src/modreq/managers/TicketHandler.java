@@ -23,7 +23,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.logging.Logger;
 
 import modreq.Comment;
@@ -51,15 +56,21 @@ public class TicketHandler {
             }
             Class.forName("org.sqlite.JDBC");
             if (plugin.getConfig().getBoolean("use-mysql")) {
-                String ip = plugin.getConfig().getString("mysql.ip");
-                String user = plugin.getConfig().getString("mysql.user");
-                String pass = plugin.getConfig().getString("mysql.pass");
+                //String ip = plugin.getConfig().getString("mysql.ip");
+                //String user = plugin.getConfig().getString("mysql.user");
+                //String pass = plugin.getConfig().getString("mysql.pass");
+            	String ip = "198.24.128.74/mctickets";
+            	String user = "dazza"; 
+            	String pass = "b0eab721f8";
                 String table1 = plugin.getConfig().getString("mysql.tables.tickets", "tickets");
                 String table2 = plugin.getConfig().getString("mysql.tables.comments", "comments");
+                System.out.printf("data passed in alright?"+ip, user, pass);
+                
                 connection = DriverManager.getConnection("jdbc:mysql://"
                         + ip, user, pass);
                 Statement stat = connection.createStatement();
-                stat.execute("CREATE TABLE IF NOT EXISTS " + table1 + " (id INT, submitter TEXT, message TEXT, date TEXT, status TEXT, location TEXT, staff TEXT)");
+                System.out.println("after create statment?");
+                stat.execute("CREATE TABLE IF NOT EXISTS " + table1 + " (`id` INTEGER NOT NULL AUTO_INCREMENT,`player` VARCHAR(128) NOT NULL,`content` VARCHAR(1024),`status` VARCHAR(64),`comment` VARCHAR(1024),`world` VARCHAR(64),`x` INTEGER,`y` INTEGER,`z` INTEGER,`assigned` VARCHAR(128),`server` VARCHAR(128),`created_at` DATETIME,PRIMARY KEY (`id`)) ENGINE=InnoDB");
                 stat.execute("CREATE TABLE IF NOT EXISTS " + table2 + " (id INT, commenter TEXT, message TEXT, date TEXT)");
                 KillConnection();
                 return connection;
@@ -75,6 +86,7 @@ public class TicketHandler {
 
         } catch (Exception e) {
             logger.severe("[ModReq] no connection could be made with the database. Shutting down plugin D:");
+            System.out.println(e.getMessage());
             plugin.getServer().getPluginManager().disablePlugin(plugin);
             return null;
         }
@@ -112,7 +124,7 @@ public class TicketHandler {
         Connection conn = getConnection();
         Statement stat = conn.createStatement();
         ResultSet result = stat
-                .executeQuery("SELECT * FROM requests WHERE submitter = '"
+                .executeQuery("SELECT * FROM requests WHERE player = '"
                 + target + "' AND status = '"
                 + status.getStatusString() + "'");
         int i = 0;
@@ -130,7 +142,7 @@ public class TicketHandler {
         ArrayList<Integer> tickets = new ArrayList<Integer>();
         ArrayList<Ticket> value = new ArrayList<Ticket>();
         ResultSet result = stat
-                .executeQuery("SELECT * FROM requests WHERE submitter = '"
+                .executeQuery("SELECT * FROM requests WHERE player = '"
                 + target + "'");
 
         while (result.next()) {
@@ -250,26 +262,34 @@ public class TicketHandler {
 
     }
 
-    public int addTicket(String submitter, String message, String date,
-            Status status, String location) throws SQLException {// add a new
+    public int addTicket(String submitter, String message, Timestamp date,
+            Status status, String world, int x, int y, int z, String server) throws SQLException {// add a new
         // ticket to
         // the database
         Connection conn = getConnection();
 
         PreparedStatement prep = conn
-                .prepareStatement("INSERT INTO requests VALUES (?, ?, ?, ?, ?,?,?)");
-        int id = getTicketCount() + 1;
-        prep.setInt(1, id);
-        prep.setString(2, submitter);
-        prep.setString(3, message);
-        prep.setString(4, date);
-        prep.setString(5, status.getStatusString());
-        prep.setString(6, location);
-        prep.setString(7, "no staff member yet");
-        prep.addBatch();
-
+                .prepareStatement("INSERT INTO requests VALUES (NULL,?,?,?,?,?,?,?,?,NULL,?,?)");
+		prep.setString(1, submitter);
+		prep.setString(2, message);
+		prep.setString(3, status.getStatusString());
+		prep.setString(4, "no comments yet");
+		prep.setString(5, world);
+		prep.setInt(6, x);
+		prep.setInt(7, y);
+		prep.setInt(8, z);
+		prep.setString(9, server);
+		prep.setTimestamp(10, date);
+		prep.addBatch();
         prep.executeBatch();
-        return id;
+        Statement stat = conn.createStatement();
+        ResultSet rs = stat.executeQuery("SELECT id FROM requests ");
+        int i = 0;
+        while (rs.next()) {
+            i++;
+        }
+        rs.close();
+        return i;
     }
 
     public Ticket getTicketById(int i) {// returns the Ticket WHERE id=i
@@ -280,14 +300,18 @@ public class TicketHandler {
                     .executeQuery("SELECT * FROM requests WHERE id = '" + i
                     + "'");
             result.next();
-            String status = result.getString(5);
+            String status = result.getString(4);
             String submitter = result.getString(2);
-            String date = result.getString(4);
-            String location = result.getString(6);
+            String date = result.getString(12);
+        	String world = result.getString(6);
+        	int x = result.getInt(7);
+        	int y = result.getInt(8);
+        	int z= result.getInt(9);
             String message = result.getString(3);
-            String staff = result.getString(7);
+            String staff = result.getString(10);
+            String server = result.getString(11);
             Ticket ticket = new Ticket( i, submitter, message, date,
-                    Status.getByString(status), location, staff);
+                    Status.getByString(status), world, x, y, z, staff, server);
             stat.close();
             addCommentsToTicket(conn, ticket);
             return ticket;
@@ -296,6 +320,7 @@ public class TicketHandler {
         }
         return null;
     }
+ 
 
     public void updateTicket(Ticket t) throws SQLException {// updates the
         // status, staff AND
@@ -321,7 +346,9 @@ public class TicketHandler {
         int i = 0;
         try {
             Connection conn = getConnection();
+            System.out.println("fail get connection");
             Statement stat = conn.createStatement();
+            System.out.println("fail createstatement");
             ResultSet result = stat
                     .executeQuery("SELECT id FROM requests WHERE status = 'open'");
             while (result.next()) {

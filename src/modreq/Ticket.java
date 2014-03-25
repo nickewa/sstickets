@@ -18,7 +18,11 @@
 package modreq;
 
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import modreq.managers.TicketHandler;
 
@@ -39,9 +43,14 @@ public class Ticket {
     private String staff;
     private TicketHandler tickets;
     private ArrayList<Comment> comments;
+	private int xx;
+	private int yy;
+	private int zz;
+	private String serverr;
+
 
     public Ticket(int idp, String submitt, String messa,
-            String date, Status status, String loc, String sta) {
+            String date, Status status, String loc, int x, int y, int z, String sta, String server) {
         submitter = submitt;
         id = idp;
         staff = sta;
@@ -49,6 +58,10 @@ public class Ticket {
         message = messa;
         this.status = status;
         location = loc;
+        xx = x;
+        yy = y;
+        zz = z;
+        serverr = server;
 
         tickets = ModReq.getInstance().getTicketHandler();
         comments = new ArrayList<Comment>();
@@ -128,6 +141,8 @@ public class Ticket {
         Location loc = new Location(w, xx, yy, zz);
         return loc;
     }
+    
+    
 
     /**
      * This is used to send a the summary of a ticket to a player an example can
@@ -150,8 +165,8 @@ public class Ticket {
             n++;
         }
         String summessage = message;
-        if (summessage.length() > 15) {
-            summessage = summessage.substring(0, 15);
+        if (summessage.length() > 30) {
+            summessage = summessage.substring(0, 30);
         }
         String summary;
         if (((ModReq) Bukkit.getPluginManager().getPlugin("ModReq"))
@@ -182,8 +197,8 @@ public class Ticket {
      */
     public void sendStatus(Player p) {
         String summessage = message;
-        if (summessage.length() > 15) {
-            summessage = summessage.substring(0, 15);
+        if (summessage.length() > 30) {
+            summessage = summessage.substring(0, 30);
         }
         String summary = ChatColor.GOLD + "#" + id + ChatColor.AQUA + " "
                 + date + " " + "[" + Integer.toString(comments.size()) + "]"
@@ -193,12 +208,13 @@ public class Ticket {
 
     }
 
-    /**
+    /**a
      * This is used to send all the ticket info to a player
      *
      * @return
+     * @throws ParseException 
      */
-    public void sendMessageToPlayer(Player p) {
+    public void sendMessageToPlayer(Player p){
         if (((ModReq) Bukkit.getPluginManager().getPlugin("ModReq"))
                 .getConfig().getString("use-nickname").equalsIgnoreCase("true")) {
             if (playerIsOnline()) {
@@ -220,18 +236,31 @@ public class Ticket {
                 + submitter);
         if (p.hasPermission("modreq.tp-id") || p.getName().equals(submitter)) {
             p.sendMessage(ChatColor.AQUA + a + ": " + ChatColor.GRAY
-                    + location);
+                    + location + " @ " + xx +", "+ yy+", "+ zz);
         }
         p.sendMessage(ChatColor.AQUA + g + ": " + ChatColor.GRAY
                 + staff);
-        p.sendMessage(ChatColor.AQUA + c + ": " + ChatColor.GRAY + date);
+        
+       
+		p.sendMessage(ChatColor.AQUA + c + ": " + ChatColor.GRAY + date);
+
+		
+        p.sendMessage(ChatColor.AQUA + "Server" + ": " + ChatColor.GRAY + serverr);
         p.sendMessage(ChatColor.AQUA + f + ": " + ChatColor.GRAY
                 + message);
         p.sendMessage(ChatColor.AQUA + e + ":");
 
         sendComments(p);
     }
-
+    
+	public String newdate() throws ParseException{
+		DateFormat dateFormat = new SimpleDateFormat("yyy-MM-dd HH:mm:ss");
+		System.out.println("date here?");
+		Date dat = dateFormat.parse(date);
+		String newstring = new SimpleDateFormat("MMM-dd HH:mm").format(dat);
+		return newstring;
+	}
+	
     private void sendComments(Player p) {
         int i = comments.size() - 1;//
         if (i == -1) {

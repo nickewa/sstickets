@@ -18,6 +18,7 @@
 package modreq.commands;
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
 
 import modreq.ModReq;
 import modreq.Status;
@@ -92,15 +93,22 @@ public class ModreqCommand implements CommandExecutor {
     }
 
     private int savereq(String message, CommandSender sender, Location loc) {// save
-        String time = ModReq.getTimeString();
-        String location = loc.getWorld().getName() + " @ "
-                + Math.round(loc.getX()) + " " + Math.round(loc.getY()) + " "
-                + Math.round(loc.getZ());
+    	System.out.println("save ticket?");
+    	Timestamp date = new Timestamp(System.currentTimeMillis());
+        String world = loc.getWorld().getName();
+        int x = (int) Math.round(loc.getX()) ;
+        int y = (int) Math.round(loc.getY());
+        int z = (int) Math.round(loc.getZ());
+        String server = Bukkit.getServerName();
 
         try {
-            int id = tickets.addTicket(sender.getName(), message, time, Status.OPEN, location);
+        	System.out.println("are we getting here?");
+            int id = tickets.addTicket(sender.getName(), message, date, Status.OPEN, world, x, y, z, server);
+            System.out.println(id);
+            System.out.println("after id");
             return id;
         } catch (SQLException e) {
+        	System.out.println(e.getMessage());
         }
         return 0;
     }

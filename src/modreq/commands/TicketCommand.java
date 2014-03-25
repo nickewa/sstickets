@@ -18,6 +18,7 @@
 package modreq.commands;
 
 import java.sql.SQLException;
+import java.text.ParseException;
 
 import modreq.CommentType;
 import modreq.ModReq;
@@ -54,7 +55,7 @@ public class TicketCommand extends SubCommandExecutor {
                         sender.sendMessage(ModReq.format(ModReq.getInstance().Messages.getString("error.ticket.exist"), "","",""));
                     } else {
                         tickets.getTicketById(id).sendMessageToPlayer(
-                                (Player) sender);
+						        (Player) sender);
                     }
                 }
             }
