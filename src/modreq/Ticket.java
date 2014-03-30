@@ -247,7 +247,6 @@ public class Ticket {
 
         // *** same for the format String below
         SimpleDateFormat dt1 = new SimpleDateFormat("MMM-dd hh:mm");
-        System.out.println(dt1.format(date));
 		return dt1.format(date);
 		}  catch(Exception e) {}
 		return null;
@@ -261,7 +260,7 @@ public class Ticket {
         while (i >= 0) {
             Comment c = comments.get(i);
             String commenter = c.getCommenter();
-            //String date = c.getDate();
+            String date = c.getDate();
             String comment = c.getComment();
             comment = ChatColor.translateAlternateColorCodes('&', comment);
             p.sendMessage(ChatColor.GOLD + "#" + Integer.toString(i + 1) + " "

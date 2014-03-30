@@ -232,19 +232,20 @@ public class ModReq extends JavaPlugin {
     }
     public static String getTimeString() {
     	
-    	String timezone = ModReq.getInstance().getConfig()
-                .getString("timezone");
-        DateFormat df = new SimpleDateFormat(ModReq.getInstance().getConfig()
-                .getString("timeformat", "YY-MM-dd HH:mm:ss"));
-        TimeZone tz = TimeZone.getTimeZone(timezone);
+    	//String timezone = ModReq.getInstance().getConfig()
+        //        .getString("timezone");
+        //DateFormat df = new SimpleDateFormat(ModReq.getInstance().getConfig()
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        //        .getString("timeformat", "YY-MM-dd HH:mm:ss"));
+        //TimeZone tz = TimeZone.getTimeZone(timezone);
 
-        Calendar cal = Calendar.getInstance(Calendar.getInstance()
-                .getTimeZone(), Locale.ENGLISH);
-        cal.add(Calendar.MILLISECOND, -(cal.getTimeZone().getRawOffset()));
-        cal.add(Calendar.MILLISECOND, tz.getRawOffset());
-        Date dt = new Date(cal.getTimeInMillis());
-
-        return df.format(dt) + " @" + timezone;
+        //Calendar cal = Calendar.getInstance(Calendar.getInstance()
+        //        .getTimeZone(), Locale.ENGLISH);
+        //cal.add(Calendar.MILLISECOND, -(cal.getTimeZone().getRawOffset()));
+        //cal.add(Calendar.MILLISECOND, tz.getRawOffset());
+        //Date dt = new Date(cal.getTimeInMillis());
+        Date dt = new Date();
+        return df.format(dt);
     }
     public static String format(String input, String player, String number, String comment){
         input = input.replace("&player", player);

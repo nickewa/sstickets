@@ -60,7 +60,7 @@ public class TicketHandler {
                         + ip, user, pass);
                 Statement stat = connection.createStatement();
                 stat.execute("CREATE TABLE IF NOT EXISTS " + table1 + " (`id` INTEGER NOT NULL AUTO_INCREMENT,`submitter` VARCHAR(128) NOT NULL,`content` VARCHAR(1024),`status` VARCHAR(64),`comment` VARCHAR(1024),`world` VARCHAR(64),`x` INTEGER,`y` INTEGER,`z` INTEGER,`staff` VARCHAR(128),`server` VARCHAR(128),`created_at` DATETIME,PRIMARY KEY (`id`)) ENGINE=InnoDB");
-                stat.execute("CREATE TABLE IF NOT EXISTS " + table2 + " (id INT, commenter TEXT, message TEXT, date TEXT)");
+                stat.execute("CREATE TABLE IF NOT EXISTS " + table2 + " (`id` INT, `commenter` VARCHAR(128) NOT NULL, `message` VARCHAR(1024), `date` DATETIME)");
                 KillConnection();
                 return connection;
             } else {
@@ -114,7 +114,7 @@ public class TicketHandler {
         ResultSet result = stat
                 .executeQuery("SELECT * FROM requests WHERE submitter = '"
                 + target + "' AND status = '"
-                + status.getStatusString() + "'");
+                + status.getStatusString() + "' AND server = '"+Bukkit.getServerName()+"'");
         int i = 0;
         while (result.next()) {
             i++;
@@ -131,7 +131,7 @@ public class TicketHandler {
         ArrayList<Ticket> value = new ArrayList<Ticket>();
         ResultSet result = stat
                 .executeQuery("SELECT * FROM requests WHERE submitter = '"
-                + target + "'");
+                + target + "' AND server = '"+Bukkit.getServerName()+"'");
 
         while (result.next()) {
             if (tickets.size() >= 5) {
@@ -156,7 +156,7 @@ public class TicketHandler {
             ResultSet result = stat
                     .executeQuery("SELECT * FROM requests WHERE staff = '"
                     + p.getName() + "' AND status = '"
-                    + Status.CLAIMED.getStatusString() + "' limit 5");
+                    + Status.CLAIMED.getStatusString() + "' limit 5 AND server = '"+Bukkit.getServerName()+"'");
 
             if (result.next()) {
                 return true;
@@ -188,12 +188,12 @@ public class TicketHandler {
                 	}
                     }
                 }
-                resultOC = stat.executeQuery("SELECT * FROM requests WHERE " + a + " limit " + nmbr);
+                resultOC = stat.executeQuery("SELECT * FROM requests WHERE status = 'open' AND server = '" + Bukkit.getServerName() + "' limit " + nmbr);
 
             } else {
                 resultOC = stat
                         .executeQuery("SELECT * FROM requests WHERE status = '"
-                        + status.getStatusString() + "' limit " + nmbr);
+                        + status.getStatusString() + "' AND server = '" + Bukkit.getServerName() + "' limit " + nmbr);
             }
             while (resultOC.next()) {
                 if (resultOC.getRow() > nmbr - 10 && tickets.size() < 10) {
@@ -215,7 +215,7 @@ public class TicketHandler {
         try {
             Connection conn = getConnection();
             Statement stat = conn.createStatement();
-            ResultSet rs = stat.executeQuery("SELECT id FROM requests ");
+            ResultSet rs = stat.executeQuery("SELECT id FROM requests");
             int i = 0;
             while (rs.next()) {
                 i++;
@@ -236,7 +236,7 @@ public class TicketHandler {
             Statement stat = conn.createStatement();
             ResultSet rs = stat
                     .executeQuery("SELECT id FROM requests WHERE status = '"
-                    + statusString + "'");
+                    + statusString + "' AND server = '" + Bukkit.getServerName() + "'");
             int i = 0;
             while (rs.next()) {
                 i++;
@@ -284,6 +284,7 @@ public class TicketHandler {
         try {
             Connection conn = getConnection();
             Statement stat = conn.createStatement();
+            
             ResultSet result = stat
                     .executeQuery("SELECT * FROM requests WHERE id = '" + i
                     + "'");
@@ -336,7 +337,7 @@ public class TicketHandler {
             Connection conn = getConnection();
             Statement stat = conn.createStatement();
             ResultSet result = stat
-                    .executeQuery("SELECT id FROM requests WHERE status = 'open'");
+                    .executeQuery("SELECT id FROM requests WHERE status = 'open' AND server = '" + Bukkit.getServerName() + "'");
             while (result.next()) {
                 i++;
             }

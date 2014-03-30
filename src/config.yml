@@ -41,11 +41,11 @@ maximum-open-tickets: 5
 #hour are: Version number of modreq, Latest download link. Once you
 #do /updatemodreq the jar file and the changelog are downloaded to
 #a folder inside the plugin folder.
-check-updates: true
+check-updates: false
 
 #use metrics. This sends anonymous data to mcstats.org to analize. 
 #This is NO HARM for your server
-metrics: true
+metrics: false
 
 #If you change this to true, a staff member can claim multiple
 #tickets at the same time
