@@ -25,6 +25,8 @@ import modreq.Ticket;
 import modreq.korik.SubCommandExecutor;
 import modreq.managers.TicketHandler;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -56,16 +58,22 @@ public class TpIdCommand extends SubCommandExecutor {
                         p.sendMessage(ModReq.format(ModReq.getInstance().Messages.getString("error.ticket.exists"), "","",""));
                     } else {
                         Ticket t = tickets.getTicketById(id);
-                        t.addDefaultComment(p, CommentType.TP);
-                        try {
-                            t.update();
-                        } catch (SQLException e) {
-                            e.printStackTrace();
-                        }
-                        Location loc = t.getLocation();
-                        p.teleport(loc);
-                        p.sendMessage(ModReq.format(ModReq.getInstance().Messages.getString("staff.executor.ticket.teleport"), "","",""));
-                        t.sendMessageToSubmitter(ModReq.format(ModReq.getInstance().Messages.getString("player.teleport"), sender.getName(),args[0],""));
+                        System.out.println(t.getServer());
+                        System.out.println(Bukkit.getServerName());
+                        if (t.getServer().equals(Bukkit.getServerName())){
+                        	t.addDefaultComment(p, CommentType.TP);
+                        	try {
+                        		t.update();
+                        	} catch (SQLException e) {
+                        		e.printStackTrace();
+                        	}
+                        	Location loc = t.getLocation();
+                        	p.teleport(loc);
+                        	p.sendMessage(ModReq.format(ModReq.getInstance().Messages.getString("staff.executor.ticket.teleport"), "","",""));
+                        	t.sendMessageToSubmitter(ModReq.format(ModReq.getInstance().Messages.getString("player.teleport"), sender.getName(),args[0],""));
+                    } else {
+                    	p.sendMessage("You cannot teleport to this ticket as it was made on another server.");
+                    }
                     }
                 }
             }

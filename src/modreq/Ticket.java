@@ -132,6 +132,11 @@ public class Ticket {
 		Location loc = new Location(w,xx,yy,zz);
         return loc;
     }
+    
+    public String getServer() {
+        return serverr;
+    }
+    
 
     /**
      * This is used to send a the summary of a ticket to a player an example can
