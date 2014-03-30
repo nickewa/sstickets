@@ -18,7 +18,9 @@
 package modreq;
 
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import modreq.managers.TicketHandler;
 
@@ -39,9 +41,14 @@ public class Ticket {
     private String staff;
     private TicketHandler tickets;
     private ArrayList<Comment> comments;
+	private int xx;
+	private int yy;
+	private int zz;
+	private String serverr;
+	private String world;
 
     public Ticket(int idp, String submitt, String messa,
-            String date, Status status, String loc, String sta) {
+            String date, Status status, String loc, int x, int y, int z, String sta, String server) {
         submitter = submitt;
         id = idp;
         staff = sta;
@@ -49,6 +56,10 @@ public class Ticket {
         message = messa;
         this.status = status;
         location = loc;
+        xx = x;
+        yy = y;
+        zz = z;
+        serverr = server;
 
         tickets = ModReq.getInstance().getTicketHandler();
         comments = new ArrayList<Comment>();
@@ -116,16 +127,9 @@ public class Ticket {
      * @return
      */
     public Location getLocation() {
-        String world = location.split(" @ ")[0];
-        String rest = location.split(" @ ")[1];
-        String x = rest.split(" ")[0];
-        String y = rest.split(" ")[1];
-        String z = rest.split(" ")[2];
-        World w = Bukkit.getServer().getWorld(world);
-        double xx = Integer.parseInt(x);
-        double yy = Integer.parseInt(y);
-        double zz = Integer.parseInt(z);
-        Location loc = new Location(w, xx, yy, zz);
+    	String world = location;
+		World w = Bukkit.getServer().getWorld(world);
+		Location loc = new Location(w,xx,yy,zz);
         return loc;
     }
 
@@ -160,7 +164,7 @@ public class Ticket {
                 submitter = Bukkit.getPlayer(submitter).getDisplayName();
             }
         }
-        summary = ChatColor.GOLD + "#" + id + ChatColor.AQUA + " " + date
+        summary = ChatColor.GOLD + "#" + id + ChatColor.AQUA + " " + FormateDate(date)
                 + " [" + Integer.toString(comments.size()) + "] "
                 + namecolor + submitter + " " + ChatColor.GRAY + summessage
                 + "...";
@@ -186,7 +190,7 @@ public class Ticket {
             summessage = summessage.substring(0, 15);
         }
         String summary = ChatColor.GOLD + "#" + id + ChatColor.AQUA + " "
-                + date + " " + "[" + Integer.toString(comments.size()) + "]"
+                + FormateDate(date) + " " + "[" + Integer.toString(comments.size()) + "]"
                 + " " + ChatColor.DARK_GREEN + " [" + status + "]" + " "
                 + ChatColor.GRAY + summessage + "...";
         p.sendMessage(summary);
@@ -220,18 +224,35 @@ public class Ticket {
                 + submitter);
         if (p.hasPermission("modreq.tp-id") || p.getName().equals(submitter)) {
             p.sendMessage(ChatColor.AQUA + a + ": " + ChatColor.GRAY
-                    + location);
+            		+ location + " @ " + xx +", "+ yy+", "+ zz);
         }
         p.sendMessage(ChatColor.AQUA + g + ": " + ChatColor.GRAY
                 + staff);
-        p.sendMessage(ChatColor.AQUA + c + ": " + ChatColor.GRAY + date);
+        p.sendMessage(ChatColor.AQUA + c + ": " + ChatColor.GRAY + FormateDate(date));
+        p.sendMessage(ChatColor.AQUA + "Server" + ": " + ChatColor.GRAY + serverr);
         p.sendMessage(ChatColor.AQUA + f + ": " + ChatColor.GRAY
                 + message);
         p.sendMessage(ChatColor.AQUA + e + ":");
 
         sendComments(p);
     }
+    
+    private String FormateDate(String date2){
 
+        // *** note that it's "yyyy-MM-dd hh:mm:ss" not "yyyy-mm-dd hh:mm:ss"  
+		try {
+			SimpleDateFormat dt = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+		
+        Date date = dt.parse(date2);
+
+        // *** same for the format String below
+        SimpleDateFormat dt1 = new SimpleDateFormat("MMM-dd hh:mm");
+        System.out.println(dt1.format(date));
+		return dt1.format(date);
+		}  catch(Exception e) {}
+		return null;
+	}
+    
     private void sendComments(Player p) {
         int i = comments.size() - 1;//
         if (i == -1) {
@@ -240,11 +261,11 @@ public class Ticket {
         while (i >= 0) {
             Comment c = comments.get(i);
             String commenter = c.getCommenter();
-            String date = c.getDate();
+            //String date = c.getDate();
             String comment = c.getComment();
             comment = ChatColor.translateAlternateColorCodes('&', comment);
             p.sendMessage(ChatColor.GOLD + "#" + Integer.toString(i + 1) + " "
-                    + ChatColor.AQUA + date + " " + ChatColor.GOLD + commenter
+                    + ChatColor.AQUA + FormateDate(date) + " " + ChatColor.GOLD + commenter
                     + ": " + ChatColor.GRAY + comment);
             i--;
         }

@@ -23,6 +23,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
@@ -58,7 +59,7 @@ public class TicketHandler {
                 connection = DriverManager.getConnection("jdbc:mysql://"
                         + ip, user, pass);
                 Statement stat = connection.createStatement();
-                stat.execute("CREATE TABLE IF NOT EXISTS " + table1 + " (id INT, submitter TEXT, message TEXT, date TEXT, status TEXT, location TEXT, staff TEXT)");
+                stat.execute("CREATE TABLE IF NOT EXISTS " + table1 + " (`id` INTEGER NOT NULL AUTO_INCREMENT,`submitter` VARCHAR(128) NOT NULL,`content` VARCHAR(1024),`status` VARCHAR(64),`comment` VARCHAR(1024),`world` VARCHAR(64),`x` INTEGER,`y` INTEGER,`z` INTEGER,`staff` VARCHAR(128),`server` VARCHAR(128),`created_at` DATETIME,PRIMARY KEY (`id`)) ENGINE=InnoDB");
                 stat.execute("CREATE TABLE IF NOT EXISTS " + table2 + " (id INT, commenter TEXT, message TEXT, date TEXT)");
                 KillConnection();
                 return connection;
@@ -249,26 +250,34 @@ public class TicketHandler {
 
     }
 
-    public int addTicket(String submitter, String message, String date,
-            Status status, String location) throws SQLException {// add a new
+    public int addTicket(String submitter, String message, Timestamp date,
+            Status status, String world, int x, int y, int z, String server) throws SQLException {// add a new
         // ticket to
         // the database
         Connection conn = getConnection();
 
         PreparedStatement prep = conn
-                .prepareStatement("INSERT INTO requests VALUES (?, ?, ?, ?, ?,?,?)");
-        int id = getTicketCount() + 1;
-        prep.setInt(1, id);
-        prep.setString(2, submitter);
-        prep.setString(3, message);
-        prep.setString(4, date);
-        prep.setString(5, status.getStatusString());
-        prep.setString(6, location);
-        prep.setString(7, "no staff member yet");
-        prep.addBatch();
-
+                .prepareStatement("INSERT INTO requests VALUES (NULL,?,?,?,?,?,?,?,?,NULL,?,?)");
+		prep.setString(1, submitter);
+		prep.setString(2, message);
+		prep.setString(3, status.getStatusString());
+		prep.setString(4, "no comments yet");
+		prep.setString(5, world);
+		prep.setInt(6, x);
+		prep.setInt(7, y);
+		prep.setInt(8, z);
+		prep.setString(9, server);
+		prep.setTimestamp(10, date);
+		prep.addBatch();
         prep.executeBatch();
-        return id;
+        Statement stat = conn.createStatement();
+        ResultSet rs = stat.executeQuery("SELECT id FROM requests ");
+        int i = 0;
+        while (rs.next()) {
+            i++;
+        }
+        rs.close();
+        return i;
     }
 
     public Ticket getTicketById(int i) {// returns the Ticket WHERE id=i
@@ -279,14 +288,18 @@ public class TicketHandler {
                     .executeQuery("SELECT * FROM requests WHERE id = '" + i
                     + "'");
             result.next();
-            String status = result.getString(5);
+            String status = result.getString(4);
             String submitter = result.getString(2);
-            String date = result.getString(4);
-            String location = result.getString(6);
+            String date = result.getString(12);
+        	String world = result.getString(6);
+        	int x = result.getInt(7);
+        	int y = result.getInt(8);
+        	int z= result.getInt(9);
             String message = result.getString(3);
-            String staff = result.getString(7);
+            String staff = result.getString(10);
+            String server = result.getString(11);
             Ticket ticket = new Ticket( i, submitter, message, date,
-                    Status.getByString(status), location, staff);
+                    Status.getByString(status), world, x, y, z, staff, server);
             stat.close();
             addCommentsToTicket(conn, ticket);
             return ticket;

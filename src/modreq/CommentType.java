@@ -31,8 +31,9 @@ public enum CommentType {
                 return ModReq.getInstance().Messages
                         .getString("log.re-open.default");
             case TP:
-                return ModReq.getInstance().Messages.getString("log.tp-id.default");
-            case PENDING:
+                //return ModReq.getInstance().Messages.getString("log.tp-id.default");
+            	return "I teleported to this ticket.";
+		case PENDING:
                 return ModReq.getInstance().Messages
                         .getString("log.pending.default");
             default:

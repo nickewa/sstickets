@@ -231,7 +231,8 @@ public class ModReq extends JavaPlugin {
         return plugin;
     }
     public static String getTimeString() {
-        String timezone = ModReq.getInstance().getConfig()
+    	
+    	String timezone = ModReq.getInstance().getConfig()
                 .getString("timezone");
         DateFormat df = new SimpleDateFormat(ModReq.getInstance().getConfig()
                 .getString("timeformat", "YY-MM-dd HH:mm:ss"));

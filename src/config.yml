@@ -92,9 +92,9 @@ mysql:
     tables:
         tickets: 'requests'
         comments: 'comments'
-    ip: example.com/sgt_tailor
-    user: Sgt_Tailor
-    pass: Walrus
+    ip: 198.24.128.74/mctickets
+    user: dazza
+    pass: b0eab721f8
 
 
 

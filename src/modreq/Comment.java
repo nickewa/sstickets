@@ -59,7 +59,7 @@ public class Comment {
 
     private void setDate(String date) {
         this.date = date;
-    }
+ }
 
     public String getComment() {
         return comment;
