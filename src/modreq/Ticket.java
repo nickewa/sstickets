@@ -176,6 +176,41 @@ public class Ticket
 		p.sendMessage(summary);
 	}
 	
+	public void sendSummarytoStaff(Player p) throws ParseException {
+		ChatColor namecolor = ChatColor.RED;
+		Player[] list = Bukkit.getServer().getOnlinePlayers();
+		int l = list.length;
+		int n = 0;
+		while(n<l){
+			Player op = list[n];
+			if(op.getName().equals(submitter)){
+				if(op.isOnline()) {
+					namecolor = ChatColor.GREEN;
+				}
+			}
+			n++;
+		}
+		String summessage = message;
+		if(summessage.length() > 30) {
+			summessage = summessage.substring(0, 30);
+		}
+		String summary;
+		if((( modreq )Bukkit.getPluginManager().getPlugin("ModReq")).getConfig().getString("use-nickname").equalsIgnoreCase("true")){	
+			if(playerIsOnline()) {
+				submitter = Bukkit.getPlayer(submitter).getDisplayName();
+			}
+		}
+		if(status == Status.CLAIMED) {
+
+			summary = ChatColor.GOLD + "#"+id+ ChatColor.DARK_GREEN + " " +getServer() + ChatColor.AQUA+ " " + newdate()+" "+namecolor+submitter+" "+ChatColor.GRAY+summessage+"..." + ChatColor.RED + " [Claimed]";
+		}
+		else {			
+			summary = ChatColor.GOLD + "#"+id+ ChatColor.DARK_GREEN + " " +getServer() + ChatColor.AQUA+ " " + newdate()+" "+namecolor+submitter+" "+ChatColor.GRAY+summessage+"...";
+		}
+		
+		p.sendMessage(summary);
+	}
+	
 	public String newdate() throws ParseException{
 		DateFormat dateFormat = new SimpleDateFormat("yyy-MM-dd HH:mm:ss");
 		Date dat = dateFormat.parse(date);

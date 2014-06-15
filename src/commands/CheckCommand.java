@@ -110,6 +110,23 @@ public class CheckCommand extends SubCommandExecutor{
 	    }
 	}
 	
+	@command(
+			minimumArgsLength = 1,
+			maximumArgsLength = 1,
+			usage = "/check all <page>")
+	public void all(CommandSender sender, String[] args) throws ParseException {
+		tickets = plugin.getTicketHandler();
+		int page = 1;
+	    if(args.length == 1) {
+		page = java.lang.Integer.parseInt(args[0]);
+	    }
+		if(sender instanceof Player) {
+		    	tickets.sendStaffPageAllServers(page, Status.OPEN, (Player) sender);
+		}else {
+			sender.sendMessage("This command can only be ran as a player");
+		}
+	}
+	
 	
 	
 	

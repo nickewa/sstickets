@@ -157,6 +157,40 @@ public class TicketHandler {
 		}	
 	
 	}
+	
+	public void sendStaffPageAllServers(int page, Status status, Player p) throws ParseException {
+		try {
+			Connection conn = getConnection();
+			Statement stat = conn.createStatement();
+			ArrayList<Integer> tickets = new ArrayList<Integer>();
+			int nmbr = page *10;
+			ResultSet result;
+			if(status.getStatusString().equals("open")) {
+				if(plugin.getConfig().getBoolean("show-claimed-tickets-in-open-list") == true) {
+			    	result = stat.executeQuery("SELECT * FROM ticket WHERE status = 'open' or status = 'claimed' limit "+nmbr);
+			}
+			else {
+				result = stat.executeQuery("SELECT * FROM ticket WHERE status = 'open' limit "+nmbr);
+				}
+			} else {
+				result = stat.executeQuery("SELECT * FROM ticket WHERE status = '"+status.getStatusString()+"' limit "+nmbr);
+				}
+				while(result.next()) {
+					if(result.getRow() > nmbr-10) {
+						tickets.add(result.getInt(1));
+					}
+				}
+				p.sendMessage(ChatColor.GOLD+"-----List-of-global-"+status.getStatusString()+"-Requests-----");
+				for(int i=0; i<tickets.size(); i++) {
+					getTicketById(tickets.get(i)).sendSummarytoStaff(p);
+				}
+				p.sendMessage(ChatColor.GOLD + "do /check all <page> to see more");
+				conn.close();
+				return;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
     public int getTicketCount() {//get the total amount of tickets
 		try {
 			Connection conn = getConnection();
