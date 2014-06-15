@@ -418,7 +418,6 @@ public class TicketHandler {
 					String Server = result.getString(2);
 					if (Server == null)
 						Server = "ALL";
-					System.out.println("I got: " + Server);
 					p.sendMessage(ChatColor.GOLD+""+staffname+" has completed "+Count+" ticket(s) on "+ChatColor.RED+Server);
 				}
 				conn.close();
