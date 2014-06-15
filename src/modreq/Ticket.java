@@ -1,12 +1,28 @@
+/*
+ Modreq Minecraft/Bukkit server ticket system
+ Copyright (C) 2013 Sven Wiltink
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package modreq;
 
 import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
-import managers.TicketHandler;
+import modreq.managers.TicketHandler;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -14,308 +30,389 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-public class Ticket
-{
-	private int id;
-	private String submitter;
-	private String serverr;
-	private String serv;
-	private String message;
-	private String date;
-	private Status status;
-	private String comment;
-	private String location;
-	private String staff;
-	private String sub;
-	private String dt;
-	private String sta;
-	private String com;
-	private String loc;
-	private String staf;
-	private String request;
-	private TicketHandler tickets;
-	private String world;
+public class Ticket {
+
+    private int id;
+    private String submitter;
+    private String message;
+    private String date;
+    private Status status;
+    private String location;
+    private String staff;
+    private TicketHandler tickets;
+    private ArrayList<Comment> comments;
 	private int xx;
 	private int yy;
 	private int zz;
-	
-	public Ticket(modreq plugin,int idp, String submitt, String serv, String messa, String date, Status status, String comm, String loc, int x, int y, int z, String sta)	{
-		submitter = submitt;
-		serverr = serv;
-		id = idp;
-		staff = sta;
-		this.date = date;
-		message = messa;
-		this.status = status;
-		location = loc;
-		comment = comm;
-		world = loc;
-		xx = x;
-		yy = y;
-		zz = z;
-		
-		tickets = plugin.getTicketHandler();
-		this.loc = plugin.Messages.getString("ticket.location", "Location");
-		this.sub = plugin.Messages.getString("ticket.submitter", "Submitter");
-		this.serv = plugin.Messages.getString("ticket.serverr", "Server");
-		this.dt = plugin.Messages.getString("ticket.date", "Date of Request");
-		this.sta = plugin.Messages.getString("ticket.status", "Status");
-		this.com = plugin.Messages.getString("ticket.comment", "Comment");
-		this.request = plugin.Messages.getString("ticket.request", "Request");
-		this.staf = plugin.Messages.getString("ticket.staff", "Staff member");
-		
-	}
-	/**
-	 * This is used to get the message that the sumbmitter send.
-	 * @return
-	 */
-	public String getMessage() {
-		return message;
-	}
-	/**
-	 * This is used to get the staff member's name that is currently working on the request.
-	 * @return
-	 */
-	public String getStaff() {
-		return staff;
-	}
-	/**
-	 * This is used to get the name of the submitter
-	 * @return
-	 */
-	public String getSubmitter() {
-		return submitter;
-	}
-	
-	public String getServer() {
-		return serverr;
-	}
-	/**
-	 * This is used to get the date of the request
-	 * @return
-	 */
-	public Long getDate() {
-		long epoch = System.currentTimeMillis()/1000;
-		return epoch;
-	}
-	/**
-	 * This is used to get the ticket id
-	 * @return
-	 */
-	public int getId() {
-		return id;
-	}
-	/**
-	 * This is used to get the current status of the ticket
-	 * @return
-	 */
-	public Status getStatus() {
-		return status;
-	}
-	/**
-	 * This is used to get the latest comment on the ticket
-	 * @return
-	 */
-	public String getComment() {
-		return comment;
-	}
-	/**
-	 * This is used to get the location of the request.
-	 * The format is worldname x y z
-	 * @return
-	 */
-	public Location getLocation() {
+	private String serverr;
+	private String world;
+
+    public Ticket(int idp, String submitt, String messa,
+            String date, Status status, String loc, int x, int y, int z, String sta, String server) {
+        submitter = submitt;
+        id = idp;
+        staff = sta;
+        this.date = date;
+        message = messa;
+        this.status = status;
+        location = loc;
+        xx = x;
+        yy = y;
+        zz = z;
+        serverr = server;
+
+        tickets = ModReq.getInstance().getTicketHandler();
+        comments = new ArrayList<Comment>();
+    }
+
+    /**
+     * This is used to get the message that the submitter send.
+     *
+     * @return
+     */
+    public String getMessage() {
+        return message;
+    }
+
+    /**
+     * This is used to get the staff member's name that is currently working on
+     * the request.
+     *
+     * @return
+     */
+    public String getStaff() {
+        return staff;
+    }
+
+    /**
+     * This is used to get the name of the submitter
+     *
+     * @return
+     */
+    public String getSubmitter() {
+        return submitter;
+    }
+
+    /**
+     * This is used to get the date of the request
+     *
+     * @return
+     */
+    public String getDate() {
+        return date;
+    }
+
+    /**
+     * This is used to get the ticket id
+     *
+     * @return
+     */
+    public int getId() {
+        return id;
+    }
+
+    /**
+     * This is used to get the current status of the ticket
+     *
+     * @return
+     */
+    public Status getStatus() {
+        return status;
+    }
+
+    /**
+     * This is used to get the location of the request. The format is worldname
+     * x y z
+     *
+     * @return
+     */
+    public Location getLocation() {
+    	String world = location;
 		World w = Bukkit.getServer().getWorld(world);
 		Location loc = new Location(w,xx,yy,zz);
-		return loc;
-	}
-	
-	public World getWorld() {
-		String world = location.split(" @ ")[0];
-		World wor = Bukkit.getServer().getWorld(world);
-		return wor;
-	}
-	/**
-	 * This is used to send a the summary of a ticket to a player
-	 * an example can be #id2 Mon 1 May Sgt_Tailor I need my house rolled back, ...
-	 * @return
-	 * @throws ParseException 
-	 */
-	public void sendSummarytoPlayer(Player p) throws ParseException {
-		ChatColor namecolor = ChatColor.RED;
-		Player[] list = Bukkit.getServer().getOnlinePlayers();
-		int l = list.length;
-		int n = 0;
-		while(n<l){
-			Player op = list[n];
-			if(op.getName().equals(submitter)){
-				if(op.isOnline()) {
-					namecolor = ChatColor.GREEN;
-				}
-			}
-			n++;
-		}
-		String summessage = message;
-		if(summessage.length() > 30) {
-			summessage = summessage.substring(0, 30);
-		}
-		String summary;
-		if((( modreq )Bukkit.getPluginManager().getPlugin("ModReq")).getConfig().getString("use-nickname").equalsIgnoreCase("true")){	
-			if(playerIsOnline()) {
-				submitter = Bukkit.getPlayer(submitter).getDisplayName();
-			}
-		}
-		if(status == Status.CLAIMED) {
+        return loc;
+    }
+    
+    public String getServer() {
+        return serverr;
+    }
+    
 
-			summary = ChatColor.GOLD + "#"+id+ ChatColor.AQUA+ " " + newdate()+" "+namecolor+submitter+" "+ChatColor.GRAY+summessage+"..." + ChatColor.RED + " [Claimed]";
-		}
-		else {			
-			summary = ChatColor.GOLD + "#"+id+ ChatColor.AQUA+ " " + newdate()+" "+namecolor+submitter+" "+ChatColor.GRAY+summessage+"...";
-		}
+    /**
+     * This is used to send a the summary of a ticket to a player an example can
+     * be #id2 Mon 1 May Sgt_Tailor I need my house rolled back, ...
+     *
+     * @return
+     */
+    public void sendSummarytoPlayer(Player p) {
+        ChatColor namecolor = ChatColor.RED;
+        Player[] list = Bukkit.getServer().getOnlinePlayers();
+        int l = list.length;
+        int n = 0;
+        while (n < l) {
+            Player op = list[n];
+            if (op.getName().equals(submitter)) {
+                if (op.isOnline()) {
+                    namecolor = ChatColor.GREEN;
+                }
+            }
+            n++;
+        }
+        String summessage = message;
+        if (summessage.length() > 15) {
+            summessage = summessage.substring(0, 15);
+        }
+        String summary;
+        if (((ModReq) Bukkit.getPluginManager().getPlugin("ModReq"))
+                .getConfig().getString("use-nickname").equalsIgnoreCase("true")) {
+            if (playerIsOnline()) {
+                submitter = Bukkit.getPlayer(submitter).getDisplayName();
+            }
+        }
+        summary = ChatColor.GOLD + "#" + id + ChatColor.AQUA + " " + FormateDate(date)
+                + " [" + Integer.toString(comments.size()) + "] "
+                + namecolor + submitter + " " + ChatColor.GRAY + summessage
+                + "...";
+        if (status.equals(Status.CLAIMED)) {
+            summary = summary + " " + ChatColor.RED + " [Claimed]";
+        }
+        if (status.equals(Status.PENDING)) {
+            summary = summary + " " + ChatColor.RED + " [Pending]";
+        }
+
+        p.sendMessage(summary);
+    }
+
+    
+    public void sendSummarytoStaff(Player p) {
+        ChatColor namecolor = ChatColor.RED;
+        Player[] list = Bukkit.getServer().getOnlinePlayers();
+        int l = list.length;
+        int n = 0;
+        while (n < l) {
+            Player op = list[n];
+            if (op.getName().equals(submitter)) {
+                if (op.isOnline()) {
+                    namecolor = ChatColor.GREEN;
+                }
+            }
+            n++;
+        }
+        String summessage = message;
+        if (summessage.length() > 15) {
+            summessage = summessage.substring(0, 15);
+        }
+        String summary;
+        if (((ModReq) Bukkit.getPluginManager().getPlugin("ModReq"))
+                .getConfig().getString("use-nickname").equalsIgnoreCase("true")) {
+            if (playerIsOnline()) {
+                submitter = Bukkit.getPlayer(submitter).getDisplayName();
+            }
+        }
+        summary = ChatColor.GOLD + "#" + id + " " + ChatColor.DARK_GREEN + getServer() + ChatColor.AQUA + " " + FormateDate(date)
+                + " [" + Integer.toString(comments.size()) + "] "
+                + namecolor + submitter + " " + ChatColor.GRAY + summessage
+                + "...";
+        if (status.equals(Status.CLAIMED)) {
+            summary = summary + " " + ChatColor.RED + " [Claimed]";
+        }
+        if (status.equals(Status.PENDING)) {
+            summary = summary + " " + ChatColor.RED + " [Pending]";
+        }
+
+        p.sendMessage(summary);
+    }
+    /**
+     * This is used to send the status of a ticket to a player an example can be
+     * #3 [closed] I need my house rolled back, ...
+     *
+     * @return
+     */
+    public void sendStatus(Player p) {
+        String summessage = message;
+        if (summessage.length() > 15) {
+            summessage = summessage.substring(0, 15);
+        }
+        String summary = ChatColor.GOLD + "#" + id + ChatColor.AQUA + " "
+                + FormateDate(date) + " " + "[" + Integer.toString(comments.size()) + "]"
+                + " " + ChatColor.DARK_GREEN + " [" + status + "]" + " "
+                + ChatColor.GRAY + summessage + "...";
+        p.sendMessage(summary);
+
+    }
+
+    /**
+     * This is used to send all the ticket info to a player
+     *
+     * @return
+     */
+    public void sendMessageToPlayer(Player p) {
+        if (((ModReq) Bukkit.getPluginManager().getPlugin("ModReq"))
+                .getConfig().getString("use-nickname").equalsIgnoreCase("true")) {
+            if (playerIsOnline()) {
+                submitter = Bukkit.getPlayer(submitter).getDisplayName();
+            }
+        }
+        ModReq plugin = ModReq.getInstance();
+        String a = plugin.Messages.getString("ticket.location", "Location");
+        String b = plugin.Messages.getString("ticket.submitter", "Submitter");
+        String c = plugin.Messages.getString("ticket.date", "Date of Request");
+        String d = plugin.Messages.getString("ticket.status", "Status");
+        String e = plugin.Messages.getString("ticket.comment", "Comment");
+        String f = plugin.Messages.getString("ticket.request", "Request");
+        String g = plugin.Messages.getString("ticket.staff", "Staff member");
+        p.sendMessage(ModReq.format(plugin.Messages.getString("headers-footers.ticket.header"),"",Integer.toString(id),""));
+        p.sendMessage(ChatColor.AQUA + d + ": " + ChatColor.GRAY
+                + status);
+        p.sendMessage(ChatColor.AQUA + b + ": " + ChatColor.GRAY
+                + submitter);
+        if (p.hasPermission("modreq.tp-id") || p.getName().equals(submitter)) {
+            p.sendMessage(ChatColor.AQUA + a + ": " + ChatColor.GRAY
+            		+ location + " @ " + xx +", "+ yy+", "+ zz);
+        }
+        p.sendMessage(ChatColor.AQUA + g + ": " + ChatColor.GRAY
+                + staff);
+        p.sendMessage(ChatColor.AQUA + c + ": " + ChatColor.GRAY + FormateDate(date));
+        p.sendMessage(ChatColor.AQUA + "Server" + ": " + ChatColor.GRAY + serverr);
+        p.sendMessage(ChatColor.AQUA + f + ": " + ChatColor.GRAY
+                + message);
+        p.sendMessage(ChatColor.AQUA + e + ":");
+
+        sendComments(p);
+    }
+    
+    private String FormateDate(String date2){
+
+        // *** note that it's "yyyy-MM-dd hh:mm:ss" not "yyyy-mm-dd hh:mm:ss"  
+		try {
+			SimpleDateFormat dt = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 		
-		p.sendMessage(summary);
-	}
-	
-	public void sendSummarytoStaff(Player p) throws ParseException {
-		ChatColor namecolor = ChatColor.RED;
-		Player[] list = Bukkit.getServer().getOnlinePlayers();
-		int l = list.length;
-		int n = 0;
-		while(n<l){
-			Player op = list[n];
-			if(op.getName().equals(submitter)){
-				if(op.isOnline()) {
-					namecolor = ChatColor.GREEN;
-				}
-			}
-			n++;
-		}
-		String summessage = message;
-		if(summessage.length() > 30) {
-			summessage = summessage.substring(0, 30);
-		}
-		String summary;
-		if((( modreq )Bukkit.getPluginManager().getPlugin("ModReq")).getConfig().getString("use-nickname").equalsIgnoreCase("true")){	
-			if(playerIsOnline()) {
-				submitter = Bukkit.getPlayer(submitter).getDisplayName();
-			}
-		}
-		if(status == Status.CLAIMED) {
+        Date date = dt.parse(date2);
 
-			summary = ChatColor.GOLD + "#"+id+ ChatColor.DARK_GREEN + " " +getServer() + ChatColor.AQUA+ " " + newdate()+" "+namecolor+submitter+" "+ChatColor.GRAY+summessage+"..." + ChatColor.RED + " [Claimed]";
-		}
-		else {			
-			summary = ChatColor.GOLD + "#"+id+ ChatColor.DARK_GREEN + " " +getServer() + ChatColor.AQUA+ " " + newdate()+" "+namecolor+submitter+" "+ChatColor.GRAY+summessage+"...";
-		}
-		
-		p.sendMessage(summary);
+        // *** same for the format String below
+        SimpleDateFormat dt1 = new SimpleDateFormat("MMM-dd hh:mm");
+		return dt1.format(date);
+		}  catch(Exception e) {}
+		return null;
 	}
-	
-	public String newdate() throws ParseException{
-		DateFormat dateFormat = new SimpleDateFormat("yyy-MM-dd HH:mm:ss");
-		Date dat = dateFormat.parse(date);
-		String newstring = new SimpleDateFormat("MMM-dd HH:mm").format(dat);
-		return newstring;
-	}
-	
-	/**ate
-	 * This is used to send the status of a ticket to a player
-	 * an example can be #3 [closed] I need my house rolled back, ...
-	 * @return
-	 * @throws ParseException 
-	 */
+    
+    private void sendComments(Player p) {
+        int i = comments.size() - 1;//
+        if (i == -1) {
+            return;
+        }
+        while (i >= 0) {
+            Comment c = comments.get(i);
+            String commenter = c.getCommenter();
+            String date = c.getDate();
+            String comment = c.getComment();
+            comment = ChatColor.translateAlternateColorCodes('&', comment);
+            p.sendMessage(ChatColor.GOLD + "#" + Integer.toString(i + 1) + " "
+                    + ChatColor.AQUA + FormateDate(date) + " " + ChatColor.GOLD + commenter
+                    + ": " + ChatColor.GRAY + comment);
+            i--;
+        }
 
+    }
 
-	
-	public void sendStatus(Player p) throws ParseException {
-		String summessage = message;
-		if(summessage.length() > 30) {
-			summessage = summessage.substring(0,30);
-		}
-		String summary = ChatColor.GOLD + "#"+id+ ChatColor.AQUA+newdate()+ChatColor.DARK_GREEN+" ["+status+"]"+" "+ChatColor.GRAY+summessage+"...";
-		p.sendMessage(summary);
-	
-	}
-	/**
-	 * This is used to send all the ticket info to a player
-	 * @return
-	 * @throws ParseException 
-	 */
-	public void sendMessageToPlayer(Player p) throws ParseException {
-		if((( modreq )Bukkit.getPluginManager().getPlugin("ModReq")).getConfig().getString("use-nickname").equalsIgnoreCase("true")){	
-			if(playerIsOnline()) {
-				submitter = Bukkit.getPlayer(submitter).getDisplayName();
-				serverr = Bukkit.getServerName();
-			}
-		}
-		p.sendMessage(ChatColor.GOLD + "---Info-about-ticket-#"+id+"---");
-		p.sendMessage(ChatColor.AQUA + this.sta + ": " + ChatColor.GRAY + status);
-		p.sendMessage(ChatColor.AQUA + this.sub+": " + ChatColor.GRAY + submitter);
-		p.sendMessage(ChatColor.AQUA + this.loc+": " + ChatColor.GRAY + location + " @ "+ xx  + ", " + yy +", "+ zz);
-		if (staff == null){
-			staff = "none assigned yet";
-		}
-		p.sendMessage(ChatColor.AQUA + this.staf+": " + ChatColor.GRAY + staff);
-		p.sendMessage(ChatColor.AQUA + this.newdate()+": " + ChatColor.GRAY + date);
-		p.sendMessage(ChatColor.AQUA + this.request+": " + ChatColor.GRAY + message);
-		p.sendMessage(ChatColor.AQUA + this.com+": " + ChatColor.GRAY + comment);
-		p.sendMessage(ChatColor.AQUA + this.serv+": " + ChatColor.GRAY + serverr);
-	}
-	
-	private boolean playerIsOnline() {
-		for(Player p: Bukkit.getOnlinePlayers()) {
-			if(p.getName().equalsIgnoreCase(submitter)) {
-				return true;
-			}
-		}
-			
-		return false;
-	}
-	//the set methods start here
-	/**
-	 * This is used to set a new comment
-	 * The ticket must be updated for any changes to apply
-	 * @return
-	 */
-	public void setComment(String newcomment) {
-		comment = newcomment;
-	}
-	/**
-	 * This is used to set a new staff member
-	 * The ticket must be updated for any changes to apply
-	 * @return
-	 */
-	public void setStaff(String newstaff) {
-		staff = newstaff;
-	}
-	/**
-	 * This is used to set a new status
-	 * The ticket must be updated for any changes to apply
-	 * @return
-	 */
-	public void setStatus(Status newstatus) {
-		status = newstatus;
-		
-	}
-	/**
-	 * This is used to update a ticket
-	 * The ticket must be updated for any changes to apply
-	 * @return
-	 */
-	public void update() throws SQLException {
-		tickets.updateTicket(this);
-	}
-	public void sendMessageToSubmitter(String message) {//sends a message to the submitter of a ticket if he is online
-		Player[] op = Bukkit.getOnlinePlayers();
-		for(int i = 0; i<op.length; i++) {
-			if(op[i].getName().equals(submitter)) {
-				if(op[i].isOnline()) {
-					op[i].sendMessage(message);
-					return;
-				}
-			}
-		}
-		return;
-	}
-	
+    private boolean playerIsOnline() {
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (p.getName().equalsIgnoreCase(submitter)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * This is used to set a new staff member The ticket must be updated for any
+     * changes to apply
+     *
+     * @return
+     */
+    public void setStaff(String newstaff) {
+        staff = newstaff;
+    }
+
+    /**
+     * This is used to set a new status The ticket must be updated for any
+     * changes to apply
+     *
+     * @return
+     */
+    public void setStatus(Status newstatus) {
+        status = newstatus;
+    }
+
+    /**
+     * This is used to update a ticket The ticket must be updated for any
+     * changes to apply
+     *
+     * @return
+     */
+    public void update() throws SQLException {
+        tickets.updateTicket(this);
+    }
+
+    public void sendMessageToSubmitter(String message) {// sends a message to
+        // the submitter of a
+        // ticket if he is
+        // online
+        Player[] op = Bukkit.getOnlinePlayers();
+        for (int i = 0; i < op.length; i++) {
+            if (op[i].getName().equals(submitter)) {
+                if (op[i].isOnline()) {
+                    op[i].sendMessage(message);
+                    return;
+                }
+            }
+        }
+    }
+
+    public ArrayList<Comment> getComments() {
+        return comments;
+    }
+
+    public ArrayList<Comment> getCommentsBy(String name) {
+        ArrayList<Comment> a = new ArrayList<Comment>();
+        for (Comment c : comments) {
+            if (c.getCommenter().contains(name)) {
+                a.add(c);
+            }
+        }
+        return a;
+    }
+
+    public Comment getComment(int number) {
+        if (number < comments.size()) {
+            return comments.get(number - 1);
+        }
+        return null;
+    }
+
+    public void addComment(Comment c) {
+        comments.add(c);
+    }
+
+    public void deleteComment(int i) {
+        if (i < comments.size()) {
+            comments.remove(i - 1);
+        }
+    }
+
+    public void addDefaultComment(Player p, CommentType c) {
+        Comment comment = new Comment(p.getName(), c.getDefaultComment(), c);
+        addComment(comment);
+    }
+
+    public void notifyStaff(String notification) {
+        Player[] op = Bukkit.getOnlinePlayers();
+        for (int i = 0; i < op.length; i++) {
+            if (op[i].getName().equals(staff)) {
+                op[i].sendMessage(notification);
+                return;
+            }
+        }
+    }
 }

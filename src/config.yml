@@ -22,7 +22,7 @@
 #                            DO NOT EDIT                           #
 ####################################################################
 #The config File version. DO NOT CHANGE YOURSELF
-version: 2.2                                                    
+version: 2.4                                                    
 
 ####################################################################
 #                           Configurations                         #
@@ -32,7 +32,8 @@ version: 2.2
 maximum-open-tickets: 5
 
 #The Update feature
-
+#NOTE: as of version 2.3 ModReq does no longer spam console saying:
+#checking for updates and comparing to current version :D
 #Change this to false if you do not want modreq
 #to check for updates. The host of the jar file is bukkit dev. I
 #however host a cache on http://website.shadowblox.com/ to reduce
@@ -40,10 +41,12 @@ maximum-open-tickets: 5
 #hour are: Version number of modreq, Latest download link. Once you
 #do /updatemodreq the jar file and the changelog are downloaded to
 #a folder inside the plugin folder.
-check-updates: true
+check-updates: false
 
-#use metrics. This sends anonymous data to mcstats.org to analize. This is NO HARM for your server
-metrics: true
+#use metrics. This sends anonymous data to mcstats.org to analize. 
+#This is NO HARM for your server
+metrics: false
+
 #If you change this to true, a staff member can claim multiple
 #tickets at the same time
 may-claim-multiple: false
@@ -52,8 +55,12 @@ may-claim-multiple: false
 #online
 use-nickname: false
 #Change this to true if you want claimed ticket to appear in the
-#/check list
+#/check list.
 show-claimed-tickets-in-open-list: false
+
+#If you do not want pending tickets to appear in the /check list for
+#people with enough permissions, set this to false
+show-pending-tickets-in-open-list: true
 
 #Specify the TimeZone used for the Date here
 timezone: GMT
@@ -61,7 +68,7 @@ timezone: GMT
 #Use this to change the time format using SimpleDateFormat. If you
 #don't know how SimpleDateFormat is used you can check out this link:
 #http://docs.oracle.com/javase/1.4.2/docs/api/java/text/SimpleDateFormat.html
-timeformat: 'YY-MM-dd HH:mm:ss'
+timeformat: 'HH:mm'
 
 
 #Change this to true if you want the staff to be notified about
@@ -73,16 +80,21 @@ notify-on-login: true
 notify-on-time: true
 time-period: 5
 
+#use this to limit the amount of comments someone can add in a row
+comment-limit: 3
 #change this to use mySQL or not
 use-mysql: false
 
 #specify mySQL server information here. The example does noet work
+#The format for the ip is domain:port/database
+#You can also specify the tables used to store the tickets.
 mysql:
-    ip: example.com/sgt_tailor
-    user: Sgt_Tailor
-    pass: Walrus
-
-#To change the language used in the messages, replace the messages.yml with the messages you would like to be used
+    tables:
+        tickets: 'requests'
+        comments: 'comments'
+    ip: localhost/mctickets
+    user: dazza
+    pass: removed
 
 
 
