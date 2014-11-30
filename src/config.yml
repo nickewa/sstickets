@@ -96,5 +96,11 @@ mysql:
     user: dazza
     pass: removed
 
+#How many days to give as a grace period
+days-grace: 7
+
+#How many tickets as quota?
+ticket-quota: 15
+
 
 

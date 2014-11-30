@@ -60,7 +60,7 @@ public class TicketHandler {
                         + ip, user, pass);
                 Statement stat = connection.createStatement();
                 stat.execute("CREATE TABLE IF NOT EXISTS " + table1 + " (`id` INTEGER NOT NULL AUTO_INCREMENT,`submitter` VARCHAR(128) NOT NULL,`content` VARCHAR(1024),`status` VARCHAR(64),`comment` VARCHAR(1024),`world` VARCHAR(64),`x` INTEGER,`y` INTEGER,`z` INTEGER,`staff` VARCHAR(128),`server` VARCHAR(128),`created_at` DATETIME,PRIMARY KEY (`id`)) ENGINE=InnoDB");
-                stat.execute("CREATE TABLE IF NOT EXISTS " + table2 + " (`id` INT, `commenter` VARCHAR(128) NOT NULL, `message` VARCHAR(1024), `date` DATETIME)");
+                stat.execute("CREATE TABLE IF NOT EXISTS " + table2 + " (`id` INT, `commenter` VARCHAR(128) NOT NULL, `message` VARCHAR(1024), `date` DATETIME) ENGINE=InnoDB");
                 KillConnection();
                 return connection;
             } else {
@@ -426,6 +426,21 @@ public class TicketHandler {
 				e.printStackTrace();
 			}
 	}
+    
+    public int getStaffClosedMonth(String staffname) {
+    	try {
+    		Connection conn = getConnection();
+    		Statement stat = conn.createStatement();
+    		ResultSet result = stat.executeQuery("SELECT SUM(1) FROM (SELECT 1, MAX(c.date) AS lastUpdated FROM requests t INNER JOIN comments c ON t.id=c.id WHERE t.staff='"+staffname+"' GROUP BY t.id HAVING MONTH(lastUpdated) = MONTH(NOW())) y");
+    		int ticketsClosed = 0;
+    		while (result.next()) {
+    			ticketsClosed = result.getInt(1);
+    		}
+    		return ticketsClosed;
+    	} catch (SQLException e) {
+    		return 0;
+    	}
+    }
 
     private void updateComments(Connection conn, Ticket t) throws SQLException {
         if (t.getComments().isEmpty()) {

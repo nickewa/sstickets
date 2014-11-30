@@ -4,7 +4,7 @@ config-version: 2.4
 author: Sgt_Tailor
 dev-url: http://dev.bukkit.org/server-mods/modreq/
 description: A Moderator Request plugin
-version: 2.4.1
+version: 2.4.1-c0af
 commands:
     comment:
         description: lets someone comment on a ticket
@@ -129,4 +129,7 @@ permissions:
         default: OP
     modreq.status:
         default: TRUE
+    modreq.exempt:
+        default: OP
+        description: Exempts a staff member from quota checks
     
