@@ -31,6 +31,7 @@ public class CheckCommand extends SubCommandExecutor {
 
     private ModReq plugin;
     private TicketHandler tickets;
+    
 
     public CheckCommand(ModReq instance) {
         plugin = instance;

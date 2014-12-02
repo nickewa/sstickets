@@ -61,7 +61,7 @@ public class CommentCommand extends SubCommandExecutor {
                         if(t.getSubmitter().equals(op.getName())){//it us the submitter
                             op.sendMessage(ModReq.format(ModReq.getInstance().Messages.getString("player.comment"), sender.getName(), args[0],""));
                         }
-                        else if(t.getStaff().equals(sender.getName())){//it is the staff member
+                        else if(t.getStaff() != null && t.getStaff().equals(sender.getName())){//it is the staff member
                             op.sendMessage(ModReq.format(ModReq.getInstance().Messages.getString("staff.all.comment"), sender.getName(), args[0],""));
                         }
                         else if(t.getCommentsBy(op.getName()).isEmpty() == false){//it is someone else that commented earlier
