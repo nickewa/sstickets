@@ -220,6 +220,29 @@ public class ModReq extends JavaPlugin {
                             }
                         }
                     }
+                    
+                    // Let's notify under performing staff
+                    Player[] online = Bukkit.getOnlinePlayers();
+                    for (int i = 0; i < online.length; i++) {
+                    	if (online[i].hasPermission("modreq.check") && (!online[i].hasPermission("modreq.exempt"))) {
+                    		Calendar calendar = Calendar.getInstance();
+                        	int curDay = calendar.get(Calendar.DAY_OF_MONTH);
+                        	
+                        	// Let's give everyone a grace period
+                        	if (curDay <= plugin.getConfig().getInt("days-grace", 7))
+                        		return;
+                        	
+                        	int closedTickets = th.getStaffClosedMonth(online[i].getName());
+                        	int quotaTickets = plugin.getConfig().getInt("ticket-quota", 10);
+                        	
+                        	if (closedTickets < quotaTickets) {
+                        		online[i].sendMessage(ChatColor.GOLD + "[ModReq]" + ChatColor.AQUA + " You are under your monthly ticket quota");
+                        		online[i].sendMessage(ChatColor.GOLD + "[ModReq]" + ChatColor.AQUA + " You've completed " +ChatColor.RED+ closedTickets + ChatColor.AQUA+" which is below " + ChatColor.RED+ quotaTickets);
+                        	}
+                    	}
+                    }
+                    
+                    
                 }
             }, 60L, time);
         }

@@ -53,25 +53,7 @@ public class ModReqListener implements Listener {
                 }
             }, 60L);
         }
-        // Check to see how many tickets has been closed this month.
-        if ((p.hasPermission("modreq.check")) && (!p.hasPermission("modreq.exempt"))) {
-        	Calendar calendar = Calendar.getInstance();
-        	int curDay = calendar.get(Calendar.DAY_OF_MONTH);
-        	
-        	// Let's give everyone a grace period
-        	if (curDay <= plugin.getConfig().getInt("days-grace", 7))
-        		return;
-        	
-        	TicketHandler th = new TicketHandler();
-        	int closedTickets = th.getStaffClosedMonth(p.getName());
-        	int quotaTickets = plugin.getConfig().getInt("ticket-quota", 10);
-        	
-        	if (closedTickets < quotaTickets) {
-        		p.sendMessage(ChatColor.GOLD + "[ModReq]" + ChatColor.AQUA + " You are under your monthly ticket quota");
-        		p.sendMessage(ChatColor.GOLD + "[ModReq]" + ChatColor.AQUA + " You've completed " +ChatColor.RED+ closedTickets + ChatColor.AQUA+" which is below " + ChatColor.RED+ quotaTickets);
-        	}
-        	
-        }
+        
         
         if (p.hasPermission("modreq.update")) {
             if (plugin.getConfig().getBoolean("check-updates", true)) {
