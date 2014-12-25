@@ -427,14 +427,17 @@ public class TicketHandler {
 			}
 	}
     
-    public int getStaffClosedMonth(String staffname) {
+
+    public int getStaffClosedMonth(String Player, Player staffname) {
     	try {
     		Connection conn = getConnection();
     		Statement stat = conn.createStatement();
-    		ResultSet result = stat.executeQuery("SELECT SUM(1) FROM (SELECT 1, MAX(c.date) AS lastUpdated FROM requests t INNER JOIN comments c ON t.id=c.id WHERE t.staff='"+staffname+"' GROUP BY t.id HAVING MONTH(lastUpdated) = MONTH(NOW())) y");
+    		String table1 = plugin.getConfig().getString("mysql.tables.tickets", "requests");
+            String table2 = plugin.getConfig().getString("mysql.tables.comments", "comments");
+    		ResultSet result = stat.executeQuery("SELECT SUM(1) FROM (SELECT 1, MAX(c.date) AS lastUpdated FROM " + table1 + " t INNER JOIN " + table2 + " c ON t.id=c.id WHERE t.staff='"+staffname+"' GROUP BY t.id HAVING MONTH(lastUpdated) = MONTH(NOW())) y");
     		int ticketsClosed = 0;
     		while (result.next()) {
-    			ticketsClosed = result.getInt(1);
+    			ticketsClosed = Integer.parseInt(result.getString(1));
     		}
     		return ticketsClosed;
     	} catch (SQLException e) {

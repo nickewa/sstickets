@@ -104,12 +104,16 @@ public class ModReq extends JavaPlugin {
         if (!configFile.exists()) {
             firstrun();
         }
-
-        YamlConfiguration pluginYML = YamlConfiguration.loadConfiguration(this
-                .getResource("plugin.yml"));
-        if (!pluginYML.getString("config-version").equals(
+        try {	
+        	YamlConfiguration pluginYML = YamlConfiguration.loadConfiguration(this
+        			.getResource("plugin.yml"));
+        	if (!pluginYML.getString("config-version", "failed-to-read-version").equals(
                 getConfig().getString("version"))) {
-            logger.info("[ModReq] Your plugin version does not match the config version. Please visit the bukkitdev page for more information");
+        		logger.info("[ModReq] Your plugin version does not match the config version. Please visit the bukkitdev page for more information");
+        	}
+        } catch (Exception e) {
+        	// Something went very wrong, let's log it.
+        	logger.warning("[ModReq] Unable to compare config version with plugin version");
         }
     }
     public void reload() {
@@ -222,6 +226,7 @@ public class ModReq extends JavaPlugin {
                     }
                     
                     // Let's notify under performing staff
+                    /*
                     Player[] online = Bukkit.getOnlinePlayers();
                     for (int i = 0; i < online.length; i++) {
                     	if (online[i].hasPermission("modreq.check") && (!online[i].hasPermission("modreq.exempt"))) {
@@ -241,6 +246,8 @@ public class ModReq extends JavaPlugin {
                         	}
                     	}
                     }
+                    */ 
+                    // removed for now.
                     
                     
                 }
