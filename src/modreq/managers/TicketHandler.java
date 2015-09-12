@@ -60,7 +60,7 @@ public class TicketHandler {
                         + ip, user, pass);
                 Statement stat = connection.createStatement();
                 stat.execute("CREATE TABLE IF NOT EXISTS " + table1 + " (`id` INTEGER NOT NULL AUTO_INCREMENT,`submitter` VARCHAR(128) NOT NULL,`content` VARCHAR(1024),`status` VARCHAR(64),`comment` VARCHAR(1024),`world` VARCHAR(64),`x` INTEGER,`y` INTEGER,`z` INTEGER,`staff` VARCHAR(128),`server` VARCHAR(128),`created_at` DATETIME,PRIMARY KEY (`id`)) ENGINE=InnoDB");
-                stat.execute("CREATE TABLE IF NOT EXISTS " + table2 + " (`id` INT, `commenter` VARCHAR(128) NOT NULL, `message` VARCHAR(1024), `date` DATETIME) ENGINE=InnoDB");
+                stat.execute("CREATE TABLE IF NOT EXISTS " + table2 + " (`id` INTEGER NOT NULL AUTO_INCREMENT,`ticketId` INT, `commenter` VARCHAR(128) NOT NULL, `message` VARCHAR(1024), `date` DATETIME,PRIMARY KEY (`id`)) ENGINE=InnoDB");
                 KillConnection();
                 return connection;
             } else {
@@ -393,12 +393,12 @@ public class TicketHandler {
     private void addCommentsToTicket(Connection conn, Ticket t)
             throws SQLException {
         Statement stat = conn.createStatement();
-        ResultSet rs = stat.executeQuery("SELECT * FROM comments WHERE id = '"
+        ResultSet rs = stat.executeQuery("SELECT * FROM comments WHERE ticketId = '"
                 + t.getId() + "'");
         while (rs.next()) {
-            String commenter = rs.getString(2);
-            String comment = rs.getString(3);
-            String date = rs.getString(4);
+            String commenter = rs.getString(3);
+            String comment = rs.getString(4);
+            String date = rs.getString(5);
 
             Comment c = new Comment(commenter, comment, date);
             t.addComment(c);
@@ -434,7 +434,7 @@ public class TicketHandler {
     		Statement stat = conn.createStatement();
     		String table1 = plugin.getConfig().getString("mysql.tables.tickets", "requests");
             String table2 = plugin.getConfig().getString("mysql.tables.comments", "comments");
-    		ResultSet result = stat.executeQuery("SELECT SUM(1) FROM (SELECT 1, MAX(c.date) AS lastUpdated FROM " + table1 + " t INNER JOIN " + table2 + " c ON t.id=c.id WHERE t.staff='"+staffname+"' GROUP BY t.id HAVING MONTH(lastUpdated) = MONTH(NOW())) y");
+    		ResultSet result = stat.executeQuery("SELECT SUM(1) FROM (SELECT 1, MAX(c.date) AS lastUpdated FROM " + table1 + " t INNER JOIN " + table2 + " c ON t.id=c.ticketId WHERE t.staff='"+staffname+"' GROUP BY t.id HAVING MONTH(lastUpdated) = MONTH(NOW())) y");
     		int ticketsClosed = 0;
     		while (result.next()) {
     			ticketsClosed = Integer.parseInt(result.getString(1));
@@ -450,9 +450,9 @@ public class TicketHandler {
             return;
         }
         PreparedStatement prep = conn
-                .prepareStatement("INSERT INTO comments VALUES (?, ?, ?, ?)");
+                .prepareStatement("INSERT INTO comments VALUES (NULL, ?, ?, ?, ?)");
         Statement stat = conn.createStatement();
-        ResultSet rs = stat.executeQuery("SELECT * FROM comments WHERE id = '"
+        ResultSet rs = stat.executeQuery("SELECT * FROM comments WHERE ticketId = '"
                 + t.getId() + "'");
         Comment A = new Comment();
         while (rs.next()) {
